@@ -59,11 +59,11 @@ export function AuthModal({ onClose }: AuthModalProps) {
       >
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold tracking-tight text-[#131517]">
-              {mode === 'signin' ? 'Sign in to VibeBoard' : 'Create VibeBoard Account'}
+            <h3 className="text-lg font-semibold tracking-tight text-black">
+              {mode === 'signin' ? 'Sign in to VibeBoard' : 'Create Free Account'}
             </h3>
-            <p className="text-xs text-[#64666B]">
-              Sync projects to Supabase & receive live traffic + Stripe webhooks.
+            <p className="text-xs text-neutral-500">
+              Save your apps online and see real visitors and sales automatically.
             </p>
           </div>
           <button

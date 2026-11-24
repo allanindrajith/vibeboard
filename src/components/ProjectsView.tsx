@@ -1,13 +1,10 @@
 import { useMemo, useState } from 'react';
 import {
-  Check,
-  Copy,
   ExternalLink,
-  KeyRound,
+  Link2,
   Pencil,
   Plus,
   Search,
-  Terminal,
   Trash2,
 } from 'lucide-react';
 import type { Project, ProjectVerdict, Timeframe } from '../types';
@@ -35,7 +32,6 @@ export function ProjectsView({
 }: ProjectsViewProps) {
   const [query, setQuery] = useState('');
   const [verdictFilter, setVerdictFilter] = useState<'ALL' | ProjectVerdict>('ALL');
-  const [copiedKeyId, setCopiedKeyId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     return projects.filter((p) => {
@@ -50,21 +46,15 @@ export function ProjectsView({
     });
   }, [projects, query, verdictFilter, timeframe]);
 
-  const copyKey = (project: Project) => {
-    navigator.clipboard?.writeText(project.apiKey);
-    setCopiedKeyId(project.id);
-    setTimeout(() => setCopiedKeyId(null), 1500);
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-black">
-            Shipped Apps ({projects.length})
+            My Apps ({projects.length})
           </h2>
           <p className="text-xs text-neutral-500">
-            Manage domains, API keys, and live Ship-to-Revenue metrics across your portfolio.
+            All the apps and websites you built, side by side.
           </p>
         </div>
 
@@ -75,8 +65,8 @@ export function ProjectsView({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search apps or domains..."
-              className="w-56 rounded-full border border-black/12 bg-white py-1.5 pl-8 pr-3.5 text-xs text-black placeholder-neutral-400 outline-none transition focus:border-black"
+              placeholder="Search your apps..."
+              className="w-52 rounded-full border border-black/12 bg-white py-1.5 pl-8 pr-3.5 text-xs text-black placeholder-neutral-400 outline-none transition focus:border-black"
             />
           </div>
 
@@ -110,7 +100,7 @@ export function ProjectsView({
 
       {filtered.length === 0 ? (
         <div className="luma-card rounded-2xl p-10 text-center text-sm text-neutral-500">
-          No projects match your current filter.
+          No apps match that filter.
         </div>
       ) : (
         <div className="grid gap-5 md:grid-cols-2">
@@ -135,7 +125,7 @@ export function ProjectsView({
                         >
                           {project.name}
                         </button>
-                        <span className="rounded-md bg-neutral-100 px-2 py-0.5 font-mono text-[10px] font-medium text-neutral-600">
+                        <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[10px] font-medium text-neutral-600">
                           {project.builtWith}
                         </span>
                       </div>
@@ -143,7 +133,7 @@ export function ProjectsView({
                         href={`https://${project.domain}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-0.5 inline-flex items-center gap-1 font-mono text-xs text-neutral-500 hover:text-black"
+                        className="mt-0.5 inline-flex items-center gap-1 text-xs text-neutral-500 hover:text-black"
                       >
                         {project.domain}
                         <ExternalLink className="h-3 w-3" />
@@ -160,51 +150,29 @@ export function ProjectsView({
 
                   <div className="mt-4 grid grid-cols-4 gap-2 rounded-xl bg-neutral-50 p-3">
                     <div>
-                      <div className="text-[10px] text-neutral-500">MRR ({timeframe})</div>
-                      <div className="mt-0.5 font-mono text-sm font-semibold text-black tabular-nums">
+                      <div className="text-[11px] text-neutral-500">Income</div>
+                      <div className="mt-0.5 text-sm font-semibold text-black tabular-nums">
                         ${m.mrr.toLocaleString()}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-neutral-500">Visitors</div>
-                      <div className="mt-0.5 font-mono text-sm font-medium text-neutral-700 tabular-nums">
+                      <div className="text-[11px] text-neutral-500">Visitors</div>
+                      <div className="mt-0.5 text-sm font-medium text-neutral-700 tabular-nums">
                         {m.visitors.toLocaleString()}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-neutral-500">Signups</div>
-                      <div className="mt-0.5 font-mono text-sm font-medium text-neutral-700 tabular-nums">
+                      <div className="text-[11px] text-neutral-500">Signups</div>
+                      <div className="mt-0.5 text-sm font-medium text-neutral-700 tabular-nums">
                         {m.signups.toLocaleString()}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-neutral-500">Paid</div>
-                      <div className="mt-0.5 font-mono text-sm font-semibold text-black tabular-nums">
+                      <div className="text-[11px] text-neutral-500">Paid</div>
+                      <div className="mt-0.5 text-sm font-semibold text-black tabular-nums">
                         {m.paid.toLocaleString()}
                       </div>
                     </div>
-                  </div>
-
-                  <div className="mt-3 flex items-center justify-between rounded-xl border border-black/8 bg-white px-3 py-2">
-                    <div className="flex items-center gap-2 font-mono text-[11px] text-neutral-600">
-                      <KeyRound className="h-3.5 w-3.5 text-neutral-400" />
-                      <span>{project.apiKey}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => copyKey(project)}
-                      className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium text-neutral-600 transition hover:bg-neutral-100 hover:text-black"
-                    >
-                      {copiedKeyId === project.id ? (
-                        <>
-                          <Check className="h-3 w-3 text-black" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3" /> Key
-                        </>
-                      )}
-                    </button>
                   </div>
                 </div>
 
@@ -213,17 +181,17 @@ export function ProjectsView({
                     <button
                       type="button"
                       onClick={() => onInspectProject(project.id)}
-                      className="rounded-full bg-black px-3 py-1 text-xs font-medium text-white transition hover:bg-neutral-800"
+                      className="rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-800"
                     >
-                      Analytics
+                      View Stats
                     </button>
                     <button
                       type="button"
                       onClick={() => onOpenInstall(project.id)}
-                      className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-black ring-1 ring-black/10 transition hover:bg-neutral-200"
+                      className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-3.5 py-1.5 text-xs font-medium text-black ring-1 ring-black/10 transition hover:bg-neutral-200"
                     >
-                      <Terminal className="h-3 w-3 text-black" />
-                      Install
+                      <Link2 className="h-3 w-3 text-black" />
+                      Connect
                     </button>
                   </div>
 
@@ -239,7 +207,7 @@ export function ProjectsView({
                     <button
                       type="button"
                       onClick={() => onDeleteProject(project.id)}
-                      title="Delete project"
+                      title="Delete app"
                       className="rounded-full p-1.5 text-neutral-400 transition hover:bg-neutral-100 hover:text-black"
                     >
                       <Trash2 className="h-3.5 w-3.5" />

@@ -12,31 +12,41 @@ import {
   Sparkles,
   TrendingUp,
   Users,
+  X,
   XCircle,
-  Zap,
 } from 'lucide-react';
 import type { LiveEvent, Project, ProjectVerdict, Timeframe } from '../types';
-import { computeProjectVerdict, formatRelativeTime } from '../lib/verdictEngine';
+import {
+  computeProjectVerdict,
+  formatEventLabel,
+  formatRelativeTime,
+} from '../lib/verdictEngine';
 
 export const VERDICT_BADGE: Record<
   ProjectVerdict,
   { label: string; className: string; dotClass: string }
 > = {
   SCALE: {
-    label: 'Scale',
+    label: 'Keep Growing',
     className: 'bg-black text-white border-black',
     dotClass: 'bg-white',
   },
   OPTIMIZE: {
-    label: 'Fix Funnel',
+    label: 'Needs a Tweak',
     className: 'bg-neutral-100 text-black border-neutral-300',
     dotClass: 'bg-neutral-700',
   },
   KILL_OR_PIVOT: {
-    label: 'Kill / Pivot',
+    label: 'Rethink Idea',
     className: 'bg-white text-neutral-600 border-neutral-300 border-dashed',
     dotClass: 'bg-neutral-400',
   },
+};
+
+const TIMEFRAME_TEXT: Record<Timeframe, string> = {
+  '7D': 'Last 7 days',
+  '30D': 'Last 30 days',
+  '90D': 'Last 90 days',
 };
 
 interface OverviewViewProps {
@@ -48,6 +58,7 @@ interface OverviewViewProps {
   onEditProject: (project: Project) => void;
   onOpenAddProject: () => void;
   onOpenLogEvent: (projectId?: string) => void;
+  onOpenInstall: (projectId?: string) => void;
   onQuickRevenue: (project: Project, amount: number) => void;
 }
 
@@ -60,10 +71,27 @@ export function OverviewView({
   onEditProject,
   onOpenAddProject,
   onOpenLogEvent,
+  onOpenInstall,
   onQuickRevenue,
 }: OverviewViewProps) {
   const [hoveredBar, setHoveredBar] = useState<number | null>(null);
   const [copiedPrompt, setCopiedPrompt] = useState(false);
+  const [showGuide, setShowGuide] = useState(() => {
+    try {
+      return localStorage.getItem('vibeboard_hide_guide') !== '1';
+    } catch {
+      return true;
+    }
+  });
+
+  const dismissGuide = () => {
+    setShowGuide(false);
+    try {
+      localStorage.setItem('vibeboard_hide_guide', '1');
+    } catch {
+      // ignore
+    }
+  };
 
   const selectedProject = useMemo(
     () => projects.find((p) => p.id === selectedId) ?? null,
@@ -79,7 +107,7 @@ export function OverviewView({
         trials: 0,
         paid: 0,
         mrr: 0,
-        conversion: '0.00',
+        conversion: '0.0',
         avgChurn: '0.0%',
         series: [] as { label: string; revenue: number; visitors: number }[],
       };
@@ -120,7 +148,7 @@ export function OverviewView({
       ),
     }));
 
-    const conversion = visitors > 0 ? ((paid / visitors) * 100).toFixed(2) : '0.00';
+    const conversion = visitors > 0 ? ((paid / visitors) * 100).toFixed(1) : '0.0';
     const avgChurn = churnCount > 0 ? `${(churnSum / churnCount).toFixed(1)}%` : '0.0%';
 
     return { visitors, signups, trials, paid, mrr, conversion, avgChurn, series };
@@ -162,11 +190,11 @@ export function OverviewView({
           <Sparkles className="h-6 w-6" />
         </div>
         <h2 className="mt-4 text-xl font-semibold tracking-tight text-black">
-          No apps connected yet
+          Welcome to VibeBoard
         </h2>
         <p className="mt-2 text-sm text-neutral-500">
-          Add your first shipped app to track visitors, signups, Stripe MRR, and get live
-          Kill / Scale verdicts.
+          Add your first app to see how many people visit, sign up, and pay—all in one simple
+          place.
         </p>
         <button
           type="button"
@@ -182,7 +210,50 @@ export function OverviewView({
 
   return (
     <div className="space-y-6">
-      {/* Scope Pill Bar */}
+      {/* Friendly 3-Step Quick Start Banner (dismissible) */}
+      {showGuide && (
+        <div className="luma-card relative rounded-2xl p-5">
+          <button
+            type="button"
+            onClick={dismissGuide}
+            title="Hide guide"
+            className="absolute right-4 top-4 rounded-full p-1 text-neutral-400 transition hover:bg-neutral-100 hover:text-black"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="text-sm font-semibold text-black">How VibeBoard works (3 easy steps)</div>
+          <div className="mt-3 grid gap-3 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={onOpenAddProject}
+              className="rounded-xl border border-black/10 bg-neutral-50 p-3.5 text-left transition hover:border-black/25 hover:bg-white"
+            >
+              <div className="text-xs font-semibold text-black">1. Add your app</div>
+              <p className="mt-1 text-xs text-neutral-500">
+                Enter your app name and website link. Takes 10 seconds.
+              </p>
+            </button>
+            <button
+              type="button"
+              onClick={() => onOpenInstall(focusProject?.id)}
+              className="rounded-xl border border-black/10 bg-neutral-50 p-3.5 text-left transition hover:border-black/25 hover:bg-white"
+            >
+              <div className="text-xs font-semibold text-black">2. Paste 1 prompt</div>
+              <p className="mt-1 text-xs text-neutral-500">
+                Copy our ready-made prompt into Cursor, Lovable, or Bolt.
+              </p>
+            </button>
+            <div className="rounded-xl border border-black/10 bg-neutral-50 p-3.5 text-left">
+              <div className="text-xs font-semibold text-black">3. See what makes money</div>
+              <p className="mt-1 text-xs text-neutral-500">
+                Watch visitors, signups, and real sales roll in automatically.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* App Filter Pills */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-1.5">
           <button
@@ -194,7 +265,7 @@ export function OverviewView({
                 : 'bg-white text-neutral-600 ring-1 ring-black/10 hover:text-black'
             }`}
           >
-            All Apps ({projects.length})
+            All My Apps ({projects.length})
           </button>
           {projects.map((p) => (
             <button
@@ -217,10 +288,10 @@ export function OverviewView({
             <button
               type="button"
               onClick={() => onEditProject(selectedProject)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
             >
               <Pencil className="h-3 w-3 text-neutral-500" />
-              Edit {selectedProject.name}
+              Edit Numbers
             </button>
           )}
           <button
@@ -228,91 +299,91 @@ export function OverviewView({
             onClick={() => onOpenLogEvent(selectedProject?.id)}
             className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
           >
-            <Zap className="h-3.5 w-3.5 text-black" />
-            Log Event
+            <Plus className="h-3.5 w-3.5 text-black" />
+            Add Sale / Activity
           </button>
         </div>
       </div>
 
       {/* Main 12-Col Workspace Grid */}
       <div className="grid gap-6 lg:grid-cols-12">
-        {/* Left 8 Cols: KPIs + Chart + Funnel + Table */}
+        {/* Left 8 Cols */}
         <div className="space-y-6 lg:col-span-8">
-          {/* KPI Strip */}
+          {/* Plain-English Summary Cards */}
           <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
             <div className="luma-card rounded-2xl p-4">
               <div className="flex items-center justify-between text-xs font-medium text-neutral-500">
-                <span>Total MRR</span>
+                <span>Monthly Income</span>
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-black">
                   <DollarSign className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-black tabular-nums">
+              <div className="mt-2.5 text-2xl font-semibold tracking-tight text-black tabular-nums">
                 ${aggregated.mrr.toLocaleString()}
               </div>
-              <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-black">
+              <div className="mt-1 flex items-center gap-1 text-xs font-medium text-black">
                 <TrendingUp className="h-3 w-3" />
-                {selectedProject ? selectedProject.metrics[timeframe].mrrDelta : '+38.4%'} vs prev
+                {selectedProject ? selectedProject.metrics[timeframe].mrrDelta : '+38%'} vs before
               </div>
             </div>
 
             <div className="luma-card rounded-2xl p-4">
               <div className="flex items-center justify-between text-xs font-medium text-neutral-500">
-                <span>Visitors</span>
+                <span>People Visited</span>
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-black">
                   <Users className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-black tabular-nums">
+              <div className="mt-2.5 text-2xl font-semibold tracking-tight text-black tabular-nums">
                 {aggregated.visitors.toLocaleString()}
               </div>
-              <div className="mt-1 text-[11px] text-neutral-500">
-                {aggregated.signups.toLocaleString()} signups
+              <div className="mt-1 text-xs text-neutral-500">
+                {aggregated.signups.toLocaleString()} signed up
               </div>
             </div>
 
             <div className="luma-card rounded-2xl p-4">
               <div className="flex items-center justify-between text-xs font-medium text-neutral-500">
-                <span>Paid Users</span>
+                <span>Paying Customers</span>
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-black">
                   <Activity className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-black tabular-nums">
+              <div className="mt-2.5 text-2xl font-semibold tracking-tight text-black tabular-nums">
                 {aggregated.paid.toLocaleString()}
               </div>
-              <div className="mt-1 text-[11px] font-medium text-neutral-700">
-                {aggregated.conversion}% visit → paid
+              <div className="mt-1 text-xs text-neutral-500">
+                {aggregated.conversion}% of visitors paid
               </div>
             </div>
 
             <div className="luma-card rounded-2xl p-4">
               <div className="flex items-center justify-between text-xs font-medium text-neutral-500">
-                <span>Monthly Churn</span>
+                <span>Cancellations</span>
                 <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-black">
                   <AlertTriangle className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-black tabular-nums">
+              <div className="mt-2.5 text-2xl font-semibold tracking-tight text-black tabular-nums">
                 {selectedProject
                   ? selectedProject.metrics[timeframe].churnRate
                   : aggregated.avgChurn}
               </div>
-              <div className="mt-1 text-[11px] text-neutral-500">Active window ({timeframe})</div>
+              <div className="mt-1 text-xs text-neutral-500">{TIMEFRAME_TEXT[timeframe]}</div>
             </div>
           </div>
 
-          {/* Chart + Funnel */}
+          {/* Chart + Customer Journey */}
           <div className="grid gap-5 sm:grid-cols-5">
             {/* Revenue Bar Chart */}
             <div className="luma-card rounded-2xl p-5 sm:col-span-3">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-sm font-semibold text-black">
-                    Revenue Trajectory ({timeframe})
+                    Money Earned ({TIMEFRAME_TEXT[timeframe]})
                   </div>
                   <div className="text-xs text-neutral-500">
-                    Hover bars to inspect revenue vs visitors
+                    Hover any bar to see sales and visitors
                   </div>
                 </div>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-black/15 bg-neutral-50 px-2.5 py-0.5 text-[11px] font-medium text-black">
@@ -336,9 +407,9 @@ export function OverviewView({
                       className="group relative flex h-full flex-1 flex-col items-center justify-end gap-2"
                     >
                       {isHovered && (
-                        <div className="pointer-events-none absolute -top-11 z-10 whitespace-nowrap rounded-xl border border-black/15 bg-black px-2.5 py-1.5 font-mono text-[11px] text-white shadow-lg">
+                        <div className="pointer-events-none absolute -top-11 z-10 whitespace-nowrap rounded-xl border border-black/15 bg-black px-2.5 py-1.5 text-xs text-white shadow-lg">
                           <span className="font-semibold">${bar.revenue.toLocaleString()}</span> ·{' '}
-                          {bar.visitors.toLocaleString()} vis
+                          {bar.visitors.toLocaleString()} visitors
                         </div>
                       )}
                       <div
@@ -351,30 +422,28 @@ export function OverviewView({
                               : 'bg-neutral-800'
                         }`}
                       />
-                      <span className="font-mono text-[10px] font-medium text-neutral-500">
-                        {bar.label}
-                      </span>
+                      <span className="text-[11px] font-medium text-neutral-500">{bar.label}</span>
                     </div>
                   );
                 })}
               </div>
             </div>
 
-            {/* Funnel Breakdown */}
+            {/* Customer Journey */}
             <div className="luma-card rounded-2xl p-5 sm:col-span-2">
-              <div className="text-sm font-semibold text-black">Conversion Funnel</div>
-              <div className="text-xs text-neutral-500">Visitors to Stripe Paid</div>
+              <div className="text-sm font-semibold text-black">Customer Journey</div>
+              <div className="text-xs text-neutral-500">From first visit to paying</div>
 
               <div className="mt-5 space-y-3.5">
                 {[
                   {
-                    label: 'Visitors',
+                    label: 'Visited site',
                     val: aggregated.visitors,
                     pct: aggregated.visitors > 0 ? 100 : 0,
                     color: 'bg-black',
                   },
                   {
-                    label: 'Signups',
+                    label: 'Created account',
                     val: aggregated.signups,
                     pct: Math.round(
                       (aggregated.signups / Math.max(aggregated.visitors, 1)) * 100
@@ -382,7 +451,7 @@ export function OverviewView({
                     color: 'bg-neutral-700',
                   },
                   {
-                    label: 'Trials / Active',
+                    label: 'Tried the app',
                     val: aggregated.trials,
                     pct: Math.round(
                       (aggregated.trials / Math.max(aggregated.visitors, 1)) * 100
@@ -390,7 +459,7 @@ export function OverviewView({
                     color: 'bg-neutral-500',
                   },
                   {
-                    label: 'Paid Users',
+                    label: 'Paid for it',
                     val: aggregated.paid,
                     pct: Math.max(
                       aggregated.paid > 0 ? 4 : 0,
@@ -402,7 +471,7 @@ export function OverviewView({
                   <div key={step.label}>
                     <div className="flex items-center justify-between text-xs">
                       <span className="font-medium text-neutral-600">{step.label}</span>
-                      <span className="font-mono text-black tabular-nums">
+                      <span className="font-medium text-black tabular-nums">
                         {step.val.toLocaleString()}{' '}
                         <span className="text-neutral-400">({step.pct}%)</span>
                       </span>
@@ -419,16 +488,17 @@ export function OverviewView({
             </div>
           </div>
 
-          {/* Portfolio Table */}
+          {/* My Apps Table */}
           <div className="luma-card overflow-hidden rounded-2xl">
             <div className="flex items-center justify-between border-b border-black/8 px-5 py-3.5">
               <div>
-                <h3 className="text-sm font-semibold text-black">Shipped Portfolio</h3>
+                <h3 className="text-sm font-semibold text-black">All Your Apps</h3>
                 <p className="text-xs text-neutral-500">
-                  Click a row to filter · Log a test charge with +$29
+                  Click any app to inspect it, or click &ldquo;+$29 Sale&rdquo; to try adding a
+                  payment
                 </p>
               </div>
-              <span className="rounded-full bg-neutral-100 px-2.5 py-1 font-mono text-[11px] font-medium text-neutral-600">
+              <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-medium text-neutral-600">
                 {projects.length} {projects.length === 1 ? 'app' : 'apps'}
               </span>
             </div>
@@ -437,12 +507,12 @@ export function OverviewView({
               <table className="w-full text-left text-xs">
                 <thead className="border-b border-black/8 bg-neutral-50 text-[11px] font-medium text-neutral-500">
                   <tr>
-                    <th className="px-5 py-2.5">Project</th>
+                    <th className="px-5 py-2.5">App</th>
                     <th className="px-3 py-2.5">Visitors</th>
                     <th className="px-3 py-2.5">Signups</th>
-                    <th className="px-3 py-2.5">MRR</th>
-                    <th className="px-3 py-2.5">Verdict</th>
-                    <th className="px-5 py-2.5 text-right">Quick Actions</th>
+                    <th className="px-3 py-2.5">Income</th>
+                    <th className="px-3 py-2.5">Advice</th>
+                    <th className="px-5 py-2.5 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-black/6">
@@ -464,25 +534,22 @@ export function OverviewView({
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-2">
                             <span className="font-semibold text-black">{project.name}</span>
-                            <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-neutral-600">
+                            <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 text-[10px] font-medium text-neutral-600">
                               {project.builtWith}
                             </span>
                           </div>
-                          <div className="mt-0.5 font-mono text-[11px] text-neutral-400">
-                            {project.domain} · {project.shippedAgo}
+                          <div className="mt-0.5 text-[11px] text-neutral-400">
+                            {project.domain}
                           </div>
                         </td>
-                        <td className="px-3 py-3 font-mono text-neutral-700 tabular-nums">
+                        <td className="px-3 py-3 text-neutral-700 tabular-nums">
                           {m.visitors.toLocaleString()}
                         </td>
-                        <td className="px-3 py-3 font-mono text-neutral-700 tabular-nums">
+                        <td className="px-3 py-3 text-neutral-700 tabular-nums">
                           {m.signups.toLocaleString()}
                         </td>
-                        <td className="px-3 py-3 font-mono font-semibold text-black tabular-nums">
+                        <td className="px-3 py-3 font-semibold text-black tabular-nums">
                           ${m.mrr.toLocaleString()}
-                          <span className="ml-1.5 text-[10px] font-medium text-neutral-500">
-                            {m.mrrDelta}
-                          </span>
                         </td>
                         <td className="px-3 py-3">
                           <span
@@ -500,16 +567,16 @@ export function OverviewView({
                             <button
                               type="button"
                               onClick={() => onQuickRevenue(project, 29)}
-                              title="Log a $29 Stripe charge"
-                              className="rounded-lg border border-black/15 bg-white px-2 py-1 font-mono text-[11px] font-medium text-black transition hover:bg-black hover:text-white"
+                              title="Record a $29 sale"
+                              className="rounded-full border border-black/15 bg-white px-2.5 py-1 text-[11px] font-medium text-black transition hover:bg-black hover:text-white"
                             >
-                              +$29
+                              +$29 Sale
                             </button>
                             <button
                               type="button"
                               onClick={() => onEditProject(project)}
-                              title="Edit metrics"
-                              className="rounded-lg border border-black/12 bg-white p-1.5 text-neutral-600 transition hover:bg-neutral-100 hover:text-black"
+                              title="Edit numbers"
+                              className="rounded-full border border-black/12 bg-white p-1.5 text-neutral-600 transition hover:bg-neutral-100 hover:text-black"
                             >
                               <Pencil className="h-3 w-3" />
                             </button>
@@ -524,14 +591,14 @@ export function OverviewView({
           </div>
         </div>
 
-        {/* Right 4 Cols: Dynamic Verdict + Live Feed */}
+        {/* Right 4 Cols: Next Step Advice + Activity */}
         <div className="flex flex-col gap-6 lg:col-span-4">
           {focusProject && focusVerdict && (
             <div className="luma-card rounded-2xl p-5">
               <div className="flex items-center justify-between gap-2">
                 <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-black">
                   <Sparkles className="h-3.5 w-3.5" />
-                  Verdict · {focusProject.name}
+                  Next Step · {focusProject.name}
                 </span>
                 <span
                   className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
@@ -550,51 +617,53 @@ export function OverviewView({
               </p>
 
               <div className="mt-4 rounded-xl border border-black/10 bg-neutral-50 p-3.5">
-                <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
-                  <span>Fix Prompt ({focusProject.builtWith})</span>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-black">
+                    Paste into {focusProject.builtWith}
+                  </span>
                   <button
                     type="button"
                     onClick={handleCopyFix}
-                    className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-medium normal-case tracking-normal text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
+                    className="inline-flex items-center gap-1 rounded-full bg-black px-3 py-1 text-[11px] font-medium text-white transition hover:bg-neutral-800"
                   >
                     {copiedPrompt ? (
                       <>
-                        <Check className="h-3 w-3 text-black" /> Copied
+                        <Check className="h-3 w-3" /> Copied!
                       </>
                     ) : (
                       <>
-                        <Copy className="h-3 w-3" /> Copy
+                        <Copy className="h-3 w-3" /> Copy Prompt
                       </>
                     )}
                   </button>
                 </div>
-                <p className="mt-2 font-mono text-[11px] leading-relaxed text-neutral-800">
-                  "{focusVerdict.fixPrompt}"
+                <p className="mt-2 text-xs leading-relaxed text-neutral-700">
+                  &ldquo;{focusVerdict.fixPrompt}&rdquo;
                 </p>
               </div>
             </div>
           )}
 
-          {/* Live Event Stream */}
+          {/* Recent Activity */}
           <div className="luma-card flex-1 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-black">Live Activity</h3>
-                <p className="text-xs text-neutral-500">Real-time revenue, signups & deploys</p>
+                <h3 className="text-sm font-semibold text-black">Recent Activity</h3>
+                <p className="text-xs text-neutral-500">Latest sales, signups, and visits</p>
               </div>
               <button
                 type="button"
                 onClick={() => onOpenLogEvent(selectedProject?.id)}
-                className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-medium text-black ring-1 ring-black/10 transition hover:bg-neutral-200"
+                className="rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-black ring-1 ring-black/10 transition hover:bg-neutral-200"
               >
-                + Record
+                + Add
               </button>
             </div>
 
             <div className="mt-4 space-y-2.5">
               {filteredEvents.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-black/15 p-6 text-center text-xs text-neutral-500">
-                  No events recorded for this filter yet.
+                  Nothing recorded yet. Add a sale or connect your app to see live updates here.
                 </div>
               ) : (
                 filteredEvents.map((ev) => (
@@ -623,12 +692,12 @@ export function OverviewView({
                           <span className="text-xs font-semibold text-black">
                             {ev.projectName}
                           </span>
-                          <span className="font-mono text-[10px] text-neutral-400">
-                            {ev.label}
+                          <span className="text-[11px] text-neutral-400">
+                            {formatEventLabel(ev.type, ev.label)}
                           </span>
                         </div>
                         <div
-                          className={`truncate font-mono text-[11px] ${
+                          className={`truncate text-xs ${
                             ev.type === 'revenue'
                               ? 'font-semibold text-black'
                               : 'text-neutral-600'
@@ -638,7 +707,7 @@ export function OverviewView({
                         </div>
                       </div>
                     </div>
-                    <span className="shrink-0 font-mono text-[10px] text-neutral-400">
+                    <span className="shrink-0 text-[11px] text-neutral-400">
                       {formatRelativeTime(ev.createdAt)}
                     </span>
                   </div>

@@ -27,11 +27,17 @@ import { LogEventModal } from './components/LogEventModal';
 import { AuthModal } from './components/AuthModal';
 
 const NAV_ITEMS: { id: AppView; label: string; icon: typeof LayoutDashboard }[] = [
-  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-  { id: 'projects', label: 'Projects', icon: FolderKanban },
-  { id: 'events', label: 'Events', icon: Activity },
-  { id: 'install', label: 'Install', icon: Terminal },
+  { id: 'overview', label: 'Home', icon: LayoutDashboard },
+  { id: 'projects', label: 'My Apps', icon: FolderKanban },
+  { id: 'events', label: 'Activity', icon: Activity },
+  { id: 'install', label: 'Connect App', icon: Terminal },
 ];
+
+const TIMEFRAME_LABELS: Record<Timeframe, string> = {
+  '7D': '7 Days',
+  '30D': '30 Days',
+  '90D': '90 Days',
+};
 
 export default function App() {
   const [user, setUser] = useState<User | null>(null);
@@ -151,7 +157,7 @@ export default function App() {
           {/* Right Controls */}
           <div className="flex items-center gap-2">
             {/* Timeframe Switcher */}
-            <div className="hidden items-center rounded-full bg-white p-0.5 font-mono text-[11px] ring-1 ring-black/10 sm:flex">
+            <div className="hidden items-center rounded-full bg-white p-0.5 text-xs ring-1 ring-black/10 sm:flex">
               {(['7D', '30D', '90D'] as Timeframe[]).map((tf) => (
                 <button
                   key={tf}
@@ -163,7 +169,7 @@ export default function App() {
                       : 'text-neutral-500 hover:text-black'
                   }`}
                 >
-                  {tf}
+                  {TIMEFRAME_LABELS[tf]}
                 </button>
               ))}
             </div>
@@ -314,8 +320,8 @@ export default function App() {
             <div className="flex items-center gap-2.5 text-xs text-neutral-600">
               <span className="h-2 w-2 rounded-full bg-black animate-pulse-dot" />
               <span>
-                <strong className="font-semibold text-black">Local Demo Mode.</strong> Sign in to
-                sync your projects to Supabase Postgres and ingest live traffic + Stripe webhooks.
+                <strong className="font-semibold text-black">You&apos;re in Demo Mode.</strong>{' '}
+                Sign in free to save your own apps and track real visitors and sales.
               </span>
             </div>
             <button
@@ -323,7 +329,7 @@ export default function App() {
               onClick={() => setAuthModalOpen(true)}
               className="rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-800"
             >
-              Sign In / Create Account
+              Sign In Free
             </button>
           </div>
         )}
@@ -342,11 +348,15 @@ export default function App() {
               setProjectModal({ open: true, mode: 'create', project: null })
             }
             onOpenLogEvent={(projectId) => setEventModal({ open: true, projectId })}
+            onOpenInstall={(projectId) => {
+              setInstallProjectId(projectId);
+              setView('install');
+            }}
             onQuickRevenue={(project, amount) =>
               logEvent({
                 projectId: project.id,
                 type: 'revenue',
-                label: 'stripe.charge.succeeded',
+                label: 'New Payment',
                 detail: `+$${amount.toFixed(2)} · Quick Sale`,
                 amount,
               })

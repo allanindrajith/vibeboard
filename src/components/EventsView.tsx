@@ -8,7 +8,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import type { EventType, LiveEvent, Project } from '../types';
-import { formatRelativeTime } from '../lib/verdictEngine';
+import { formatEventLabel, formatRelativeTime } from '../lib/verdictEngine';
 
 interface EventsViewProps {
   projects: Project[];
@@ -17,12 +17,12 @@ interface EventsViewProps {
 }
 
 const EVENT_TYPES: { id: 'all' | EventType; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'revenue', label: 'Revenue' },
+  { id: 'all', label: 'Everything' },
+  { id: 'revenue', label: 'Sales' },
   { id: 'signup', label: 'Signups' },
-  { id: 'dropoff', label: 'Drop-offs' },
-  { id: 'deploy', label: 'Deploys' },
-  { id: 'visitor', label: 'Traffic' },
+  { id: 'dropoff', label: 'Left Checkout' },
+  { id: 'deploy', label: 'Updates' },
+  { id: 'visitor', label: 'Visits' },
 ];
 
 export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps) {
@@ -42,10 +42,10 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-semibold tracking-tight text-black">
-            Event Stream ({filtered.length})
+            Activity Feed ({filtered.length})
           </h2>
           <p className="text-xs text-neutral-500">
-            Every recorded payment, signup, drop-off, and deploy updates your portfolio KPIs live.
+            Every sale, signup, and visit across your apps shows up here in real time.
           </p>
         </div>
 
@@ -55,7 +55,7 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
           className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition hover:bg-neutral-800"
         >
           <Plus className="h-3.5 w-3.5" />
-          Log Event
+          Add Activity
         </button>
       </div>
 
@@ -82,7 +82,7 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
           onChange={(e) => setProjectFilter(e.target.value)}
           className="rounded-full border border-black/12 bg-white px-3.5 py-1.5 text-xs font-medium text-black outline-none focus:border-black"
         >
-          <option value="all">All Projects</option>
+          <option value="all">All Apps</option>
           {projects.map((p) => (
             <option key={p.id} value={p.id}>
               {p.name}
@@ -94,7 +94,8 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
       <div className="luma-card overflow-hidden rounded-2xl">
         {filtered.length === 0 ? (
           <div className="p-10 text-center text-sm text-neutral-500">
-            No events match this filter. Click "Log Event" to record a payment, signup, or deploy.
+            No activity yet for this filter. Click &ldquo;Add Activity&rdquo; to record a sale or
+            signup.
           </div>
         ) : (
           <div className="divide-y divide-black/6">
@@ -114,12 +115,12 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-xs font-semibold text-black">{ev.projectName}</span>
-                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-[10px] text-neutral-600">
-                        {ev.label}
+                      <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-[11px] text-neutral-600">
+                        {formatEventLabel(ev.type, ev.label)}
                       </span>
                     </div>
                     <div
-                      className={`mt-0.5 font-mono text-xs ${
+                      className={`mt-0.5 text-xs ${
                         ev.type === 'revenue' ? 'font-semibold text-black' : 'text-neutral-600'
                       }`}
                     >
@@ -130,11 +131,11 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
 
                 <div className="flex items-center gap-3">
                   {ev.amount !== undefined && (
-                    <span className="rounded-full bg-black px-2.5 py-0.5 font-mono text-xs font-semibold text-white">
+                    <span className="rounded-full bg-black px-2.5 py-0.5 text-xs font-semibold text-white">
                       +${ev.amount}
                     </span>
                   )}
-                  <span className="font-mono text-[11px] text-neutral-400">
+                  <span className="text-xs text-neutral-400">
                     {formatRelativeTime(ev.createdAt)}
                   </span>
                 </div>

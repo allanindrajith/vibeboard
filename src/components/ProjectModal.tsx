@@ -74,28 +74,28 @@ export function ProjectModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-[#131517]/30 p-4 backdrop-blur-xs"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-xs"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-3xl border border-[#131517]/10 bg-white p-6 shadow-2xl"
+        className="w-full max-w-lg rounded-3xl border border-black/10 bg-white p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold tracking-tight text-[#131517]">
-              {mode === 'edit' ? `Edit ${initialProject?.name}` : 'Add Shipped App'}
+            <h3 className="text-lg font-semibold tracking-tight text-black">
+              {mode === 'edit' ? `Edit ${initialProject?.name}` : 'Add a New App'}
             </h3>
-            <p className="text-xs text-[#64666B]">
+            <p className="text-xs text-neutral-500">
               {mode === 'edit'
-                ? `Editing ${timeframe} metrics — verdict recalculates automatically.`
-                : 'Connect a new app and generate its unique VibeBoard API key.'}
+                ? 'Update your numbers anytime—advice updates automatically.'
+                : 'Just enter a name and link. You can leave numbers at 0 for brand new apps.'}
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1.5 text-[#73757C] transition hover:bg-[#F5F4F1] hover:text-[#131517]"
+            className="rounded-full p-1.5 text-neutral-500 transition hover:bg-neutral-100 hover:text-black"
           >
             <X className="h-4 w-4" />
           </button>
@@ -104,30 +104,30 @@ export function ProjectModal({
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div className="grid gap-3.5 sm:grid-cols-2">
             <div>
-              <label className="block text-xs font-medium text-[#5C5E64]">App Name</label>
+              <label className="block text-xs font-medium text-neutral-600">App Name</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="e.g. ShipPulse"
+                placeholder="e.g. My AI Notes App"
                 className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 text-sm text-black outline-none transition focus:border-black focus:bg-white"
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-[#5C5E64]">Domain</label>
+              <label className="block text-xs font-medium text-neutral-600">Website Link</label>
               <input
                 type="text"
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
-                placeholder="shippulse.io"
-                className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 font-mono text-xs text-black outline-none transition focus:border-black focus:bg-white"
+                placeholder="myapp.com"
+                className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 text-sm text-black outline-none transition focus:border-black focus:bg-white"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-[#5C5E64]">Built With</label>
+            <label className="block text-xs font-medium text-neutral-600">Built With</label>
             <div className="mt-1.5 flex flex-wrap gap-1.5">
               {BUILDERS.map((b) => (
                 <button
@@ -136,8 +136,8 @@ export function ProjectModal({
                   onClick={() => setBuiltWith(b)}
                   className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                     builtWith === b
-                      ? 'bg-[#131517] text-white'
-                      : 'bg-[#FAF9F7] text-[#5C5E64] ring-1 ring-[#131517]/8 hover:text-[#131517]'
+                      ? 'bg-black text-white'
+                      : 'bg-neutral-100 text-neutral-600 hover:text-black'
                   }`}
                 >
                   {b}
@@ -146,69 +146,69 @@ export function ProjectModal({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-[#131517]/8 bg-[#FAF9F7] p-4">
-            <div className="mb-3 text-[11px] font-semibold uppercase tracking-wider text-[#73757C]">
-              {mode === 'edit' ? `${timeframe} Metrics` : 'Starting Metrics (7D Baseline)'}
+          <div className="rounded-2xl border border-black/8 bg-neutral-50 p-4">
+            <div className="mb-3 text-xs font-semibold text-black">
+              Starting Numbers (Optional)
             </div>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               <div>
-                <label className="block text-[11px] text-[#64666B]">Visitors</label>
+                <label className="block text-[11px] text-neutral-600">Visitors</label>
                 <input
                   type="number"
                   min={0}
                   value={visitors}
                   onChange={(e) => setVisitors(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-[#64666B]">Signups</label>
+                <label className="block text-[11px] text-neutral-600">Signups</label>
                 <input
                   type="number"
                   min={0}
                   value={signups}
                   onChange={(e) => setSignups(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-[#64666B]">Trials</label>
+                <label className="block text-[11px] text-neutral-600">Free Trials</label>
                 <input
                   type="number"
                   min={0}
                   value={trials}
                   onChange={(e) => setTrials(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-[#64666B]">Paid Users</label>
+                <label className="block text-[11px] text-neutral-600">Paying Customers</label>
                 <input
                   type="number"
                   min={0}
                   value={paid}
                   onChange={(e) => setPaid(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-[#64666B]">MRR ($)</label>
+                <label className="block text-[11px] text-neutral-600">Monthly Income ($)</label>
                 <input
                   type="number"
                   min={0}
                   value={mrr}
                   onChange={(e) => setMrr(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
-                <label className="block text-[11px] text-[#64666B]">Churn Rate</label>
+                <label className="block text-[11px] text-neutral-600">Cancellations (%)</label>
                 <input
                   type="text"
                   value={churnRate}
                   onChange={(e) => setChurnRate(e.target.value)}
-                  placeholder="2.1%"
-                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
+                  placeholder="0.0%"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 text-xs text-black outline-none focus:border-black"
                 />
               </div>
             </div>
@@ -218,15 +218,15 @@ export function ProjectModal({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full px-4 py-2 text-xs font-medium text-[#5C5E64] transition hover:bg-[#F5F4F1] hover:text-[#131517]"
+              className="rounded-full px-4 py-2 text-xs font-medium text-neutral-600 transition hover:bg-neutral-100 hover:text-black"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="rounded-full bg-[#131517] px-5 py-2 text-xs font-medium text-white transition hover:bg-[#2A2D32]"
+              className="rounded-full bg-black px-5 py-2 text-xs font-medium text-white transition hover:bg-neutral-800"
             >
-              {mode === 'edit' ? 'Save Changes' : 'Create App'}
+              {mode === 'edit' ? 'Save Changes' : 'Add App'}
             </button>
           </div>
         </form>
