@@ -106,9 +106,9 @@ export default function App() {
   };
 
   return (
-    <div className="luma-ambient-bg min-h-screen text-[#131517]">
-      {/* Luma-style Top Navigation */}
-      <header className="sticky top-0 z-40 border-b border-[#131517]/6 bg-[#FAF9F7]/80 backdrop-blur-md">
+    <div className="luma-ambient-bg min-h-screen text-[#0A0A0A]">
+      {/* Top Navigation */}
+      <header className="sticky top-0 z-40 border-b border-black/8 bg-[#FAFAFA]/85 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5">
           {/* Brand + Nav */}
           <div className="flex items-center gap-6">
@@ -117,10 +117,10 @@ export default function App() {
               onClick={() => setView('overview')}
               className="flex items-center gap-2.5"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF4D79] via-[#E11D48] to-[#7C3AED] text-white shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-black text-white shadow-xs">
                 <BarChart3 className="h-4 w-4" />
               </div>
-              <span className="text-base font-semibold tracking-tight text-[#131517]">
+              <span className="text-base font-semibold tracking-tight text-black">
                 VibeBoard
               </span>
             </button>
@@ -136,8 +136,8 @@ export default function App() {
                     onClick={() => setView(item.id)}
                     className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
                       active
-                        ? 'bg-white text-[#131517] shadow-xs ring-1 ring-[#131517]/8'
-                        : 'text-[#64666B] hover:bg-white/60 hover:text-[#131517]'
+                        ? 'bg-white text-black shadow-xs ring-1 ring-black/10'
+                        : 'text-neutral-500 hover:bg-white/70 hover:text-black'
                     }`}
                   >
                     <Icon className="h-3.5 w-3.5" />
@@ -151,7 +151,7 @@ export default function App() {
           {/* Right Controls */}
           <div className="flex items-center gap-2">
             {/* Timeframe Switcher */}
-            <div className="hidden items-center rounded-full bg-white p-0.5 font-mono text-[11px] ring-1 ring-[#131517]/8 sm:flex">
+            <div className="hidden items-center rounded-full bg-white p-0.5 font-mono text-[11px] ring-1 ring-black/10 sm:flex">
               {(['7D', '30D', '90D'] as Timeframe[]).map((tf) => (
                 <button
                   key={tf}
@@ -159,8 +159,8 @@ export default function App() {
                   onClick={() => setTimeframe(tf)}
                   className={`rounded-full px-2.5 py-1 font-medium transition ${
                     timeframe === tf
-                      ? 'bg-[#131517] text-white'
-                      : 'text-[#64666B] hover:text-[#131517]'
+                      ? 'bg-black text-white'
+                      : 'text-neutral-500 hover:text-black'
                   }`}
                 >
                   {tf}
@@ -170,7 +170,7 @@ export default function App() {
 
             {/* Cloud Sync / Sign In Pill */}
             {user ? (
-              <div className="hidden items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-1.5 text-[11px] font-medium text-[#047857] lg:inline-flex">
+              <div className="hidden items-center gap-1.5 rounded-full border border-black/15 bg-white px-3 py-1.5 text-[11px] font-medium text-black lg:inline-flex">
                 <Cloud className="h-3.5 w-3.5" />
                 <span>{syncing ? 'Syncing…' : user.email?.split('@')[0]}</span>
               </div>
@@ -178,9 +178,9 @@ export default function App() {
               <button
                 type="button"
                 onClick={() => setAuthModalOpen(true)}
-                className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-medium text-[#131517] ring-1 ring-[#131517]/10 transition hover:bg-[#F5F4F1]"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-medium text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
               >
-                <CloudOff className="h-3.5 w-3.5 text-[#E11D48]" />
+                <CloudOff className="h-3.5 w-3.5 text-neutral-600" />
                 Sign In
               </button>
             )}
@@ -189,7 +189,7 @@ export default function App() {
             <button
               type="button"
               onClick={() => setProjectModal({ open: true, mode: 'create', project: null })}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#131517] px-3.5 py-2 text-xs font-medium text-white shadow-xs transition hover:bg-[#2A2D32]"
+              className="inline-flex items-center gap-1.5 rounded-full bg-black px-3.5 py-2 text-xs font-medium text-white shadow-xs transition hover:bg-neutral-800"
             >
               <Plus className="h-3.5 w-3.5" />
               Add App
@@ -201,7 +201,7 @@ export default function App() {
                 type="button"
                 onClick={() => setMenuOpen((o) => !o)}
                 title="Workspace options"
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#5C5E64] ring-1 ring-[#131517]/8 transition hover:text-[#131517]"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-neutral-600 ring-1 ring-black/10 transition hover:text-black"
               >
                 <MoreHorizontal className="h-4 w-4" />
               </button>
@@ -209,13 +209,13 @@ export default function App() {
               {menuOpen && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
-                  <div className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border border-[#131517]/10 bg-white p-1.5 shadow-xl">
+                  <div className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border border-black/12 bg-white p-1.5 shadow-xl">
                     {user && (
-                      <div className="border-b border-[#131517]/6 px-3 py-2">
-                        <div className="text-[10px] font-semibold uppercase tracking-wider text-[#8E9096]">
+                      <div className="border-b border-black/8 px-3 py-2">
+                        <div className="text-[10px] font-semibold uppercase tracking-wider text-neutral-400">
                           Supabase Synced
                         </div>
-                        <div className="truncate text-xs font-medium text-[#131517]">
+                        <div className="truncate text-xs font-medium text-black">
                           {user.email}
                         </div>
                       </div>
@@ -226,9 +226,9 @@ export default function App() {
                         exportJson();
                         setMenuOpen(false);
                       }}
-                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#131517] transition hover:bg-[#FAF9F7]"
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-black transition hover:bg-neutral-100"
                     >
-                      <Download className="h-3.5 w-3.5 text-[#64666B]" />
+                      <Download className="h-3.5 w-3.5 text-neutral-500" />
                       Export JSON Backup
                     </button>
                     {!user && (
@@ -236,12 +236,12 @@ export default function App() {
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#131517] transition hover:bg-[#FAF9F7]"
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-black transition hover:bg-neutral-100"
                         >
-                          <Upload className="h-3.5 w-3.5 text-[#64666B]" />
+                          <Upload className="h-3.5 w-3.5 text-neutral-500" />
                           Import JSON Backup
                         </button>
-                        <div className="my-1 border-t border-[#131517]/6" />
+                        <div className="my-1 border-t border-black/8" />
                         <button
                           type="button"
                           onClick={() => {
@@ -249,7 +249,7 @@ export default function App() {
                             setSelectedId('all');
                             setMenuOpen(false);
                           }}
-                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#BE123C] transition hover:bg-[#FFF1F2]"
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-neutral-700 transition hover:bg-neutral-100 hover:text-black"
                         >
                           <RotateCcw className="h-3.5 w-3.5" />
                           Reset Demo Data
@@ -258,11 +258,11 @@ export default function App() {
                     )}
                     {user && (
                       <>
-                        <div className="my-1 border-t border-[#131517]/6" />
+                        <div className="my-1 border-t border-black/8" />
                         <button
                           type="button"
                           onClick={handleSignOut}
-                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#BE123C] transition hover:bg-[#FFF1F2]"
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-neutral-700 transition hover:bg-neutral-100 hover:text-black"
                         >
                           <LogOut className="h-3.5 w-3.5" />
                           Sign Out
@@ -284,7 +284,7 @@ export default function App() {
         </div>
 
         {/* Mobile Nav Bar */}
-        <div className="flex items-center justify-between gap-2 border-t border-[#131517]/6 px-4 py-2 md:hidden">
+        <div className="flex items-center justify-between gap-2 border-t border-black/8 px-4 py-2 md:hidden">
           <div className="flex items-center gap-1 overflow-x-auto">
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
@@ -295,7 +295,7 @@ export default function App() {
                   type="button"
                   onClick={() => setView(item.id)}
                   className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                    active ? 'bg-[#131517] text-white' : 'text-[#64666B]'
+                    active ? 'bg-black text-white' : 'text-neutral-500'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />
@@ -310,19 +310,18 @@ export default function App() {
       {/* Main Workspace Canvas */}
       <main className="mx-auto max-w-6xl px-5 py-7">
         {!isCloud && (
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#FECDD3]/80 bg-white/85 px-4 py-3 shadow-xs backdrop-blur-xs">
-            <div className="flex items-center gap-2.5 text-xs text-[#3F4147]">
-              <span className="h-2 w-2 rounded-full bg-[#E11D48] animate-pulse-dot" />
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/12 bg-white px-4 py-3 shadow-xs">
+            <div className="flex items-center gap-2.5 text-xs text-neutral-600">
+              <span className="h-2 w-2 rounded-full bg-black animate-pulse-dot" />
               <span>
-                <strong className="font-semibold text-[#131517]">Local Demo Mode.</strong> Sign in
-                to sync your projects to Supabase Postgres and ingest live traffic + Stripe
-                webhooks.
+                <strong className="font-semibold text-black">Local Demo Mode.</strong> Sign in to
+                sync your projects to Supabase Postgres and ingest live traffic + Stripe webhooks.
               </span>
             </div>
             <button
               type="button"
               onClick={() => setAuthModalOpen(true)}
-              className="rounded-full bg-[#131517] px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-[#2A2D32]"
+              className="rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-800"
             >
               Sign In / Create Account
             </button>

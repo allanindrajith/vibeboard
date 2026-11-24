@@ -24,18 +24,18 @@ export const VERDICT_BADGE: Record<
 > = {
   SCALE: {
     label: 'Scale',
-    className: 'bg-[#ECFDF5] text-[#047857] border-[#A7F3D0]',
-    dotClass: 'bg-[#10B981]',
+    className: 'bg-black text-white border-black',
+    dotClass: 'bg-white',
   },
   OPTIMIZE: {
     label: 'Fix Funnel',
-    className: 'bg-[#FFF7ED] text-[#C2410C] border-[#FED7AA]',
-    dotClass: 'bg-[#F97316]',
+    className: 'bg-neutral-100 text-black border-neutral-300',
+    dotClass: 'bg-neutral-700',
   },
   KILL_OR_PIVOT: {
     label: 'Kill / Pivot',
-    className: 'bg-[#FFF1F2] text-[#BE123C] border-[#FECDD3]',
-    dotClass: 'bg-[#F43F5E]',
+    className: 'bg-white text-neutral-600 border-neutral-300 border-dashed',
+    dotClass: 'bg-neutral-400',
   },
 };
 
@@ -121,8 +121,7 @@ export function OverviewView({
     }));
 
     const conversion = visitors > 0 ? ((paid / visitors) * 100).toFixed(2) : '0.00';
-    const avgChurn =
-      churnCount > 0 ? `${(churnSum / churnCount).toFixed(1)}%` : '0.0%';
+    const avgChurn = churnCount > 0 ? `${(churnSum / churnCount).toFixed(1)}%` : '0.0%';
 
     return { visitors, signups, trials, paid, mrr, conversion, avgChurn, series };
   }, [projects, selectedProject, timeframe]);
@@ -131,7 +130,6 @@ export function OverviewView({
 
   const focusProject = useMemo(() => {
     if (selectedProject) return selectedProject;
-    // Highlight the highest-priority actionable app when viewing All
     const optimizeApp = projects.find(
       (p) => computeProjectVerdict(p, timeframe).status === 'OPTIMIZE'
     );
@@ -160,20 +158,20 @@ export function OverviewView({
   if (projects.length === 0) {
     return (
       <div className="luma-card mx-auto mt-10 max-w-lg rounded-3xl p-10 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#FF4D79]/15 to-[#7C3AED]/15 text-[#E11D48]">
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-neutral-100 text-black">
           <Sparkles className="h-6 w-6" />
         </div>
-        <h2 className="mt-4 text-xl font-semibold tracking-tight text-[#131517]">
+        <h2 className="mt-4 text-xl font-semibold tracking-tight text-black">
           No apps connected yet
         </h2>
-        <p className="mt-2 text-sm text-[#64666B]">
+        <p className="mt-2 text-sm text-neutral-500">
           Add your first shipped app to track visitors, signups, Stripe MRR, and get live
           Kill / Scale verdicts.
         </p>
         <button
           type="button"
           onClick={onOpenAddProject}
-          className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#131517] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#2A2D32]"
+          className="mt-6 inline-flex items-center gap-2 rounded-full bg-black px-5 py-2.5 text-sm font-medium text-white transition hover:bg-neutral-800"
         >
           <Plus className="h-4 w-4" />
           Add Your First App
@@ -192,8 +190,8 @@ export function OverviewView({
             onClick={() => onSelectId('all')}
             className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
               selectedId === 'all'
-                ? 'bg-[#131517] text-white shadow-sm'
-                : 'bg-white/80 text-[#5C5E64] ring-1 ring-[#131517]/8 hover:bg-white hover:text-[#131517]'
+                ? 'bg-black text-white shadow-xs'
+                : 'bg-white text-neutral-600 ring-1 ring-black/10 hover:text-black'
             }`}
           >
             All Apps ({projects.length})
@@ -205,8 +203,8 @@ export function OverviewView({
               onClick={() => onSelectId(p.id)}
               className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
                 selectedId === p.id
-                  ? 'bg-[#131517] text-white shadow-sm'
-                  : 'bg-white/80 text-[#5C5E64] ring-1 ring-[#131517]/8 hover:bg-white hover:text-[#131517]'
+                  ? 'bg-black text-white shadow-xs'
+                  : 'bg-white text-neutral-600 ring-1 ring-black/10 hover:text-black'
               }`}
             >
               {p.name}
@@ -219,18 +217,18 @@ export function OverviewView({
             <button
               type="button"
               onClick={() => onEditProject(selectedProject)}
-              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-[#131517] ring-1 ring-[#131517]/10 transition hover:bg-[#F5F4F1]"
+              className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-medium text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
             >
-              <Pencil className="h-3 w-3 text-[#64666B]" />
+              <Pencil className="h-3 w-3 text-neutral-500" />
               Edit {selectedProject.name}
             </button>
           )}
           <button
             type="button"
             onClick={() => onOpenLogEvent(selectedProject?.id)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-[#131517] ring-1 ring-[#131517]/10 transition hover:bg-[#F5F4F1]"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
           >
-            <Zap className="h-3.5 w-3.5 text-[#E11D48]" />
+            <Zap className="h-3.5 w-3.5 text-black" />
             Log Event
           </button>
         </div>
@@ -243,64 +241,64 @@ export function OverviewView({
           {/* KPI Strip */}
           <div className="grid grid-cols-2 gap-3.5 sm:grid-cols-4">
             <div className="luma-card rounded-2xl p-4">
-              <div className="flex items-center justify-between text-xs font-medium text-[#64666B]">
+              <div className="flex items-center justify-between text-xs font-medium text-neutral-500">
                 <span>Total MRR</span>
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#ECFDF5] text-[#059669]">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-black">
                   <DollarSign className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-[#131517] tabular-nums">
+              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-black tabular-nums">
                 ${aggregated.mrr.toLocaleString()}
               </div>
-              <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-[#059669]">
+              <div className="mt-1 flex items-center gap-1 text-[11px] font-medium text-black">
                 <TrendingUp className="h-3 w-3" />
                 {selectedProject ? selectedProject.metrics[timeframe].mrrDelta : '+38.4%'} vs prev
               </div>
             </div>
 
             <div className="luma-card rounded-2xl p-4">
-              <div className="flex items-center justify-between text-xs font-medium text-[#64666B]">
+              <div className="flex items-center justify-between text-xs font-medium text-neutral-500">
                 <span>Visitors</span>
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#F5F3FF] text-[#7C3AED]">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-black">
                   <Users className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-[#131517] tabular-nums">
+              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-black tabular-nums">
                 {aggregated.visitors.toLocaleString()}
               </div>
-              <div className="mt-1 text-[11px] text-[#73757C]">
+              <div className="mt-1 text-[11px] text-neutral-500">
                 {aggregated.signups.toLocaleString()} signups
               </div>
             </div>
 
             <div className="luma-card rounded-2xl p-4">
-              <div className="flex items-center justify-between text-xs font-medium text-[#64666B]">
+              <div className="flex items-center justify-between text-xs font-medium text-neutral-500">
                 <span>Paid Users</span>
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#FFF0F3] text-[#E11D48]">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-black">
                   <Activity className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-[#131517] tabular-nums">
+              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-black tabular-nums">
                 {aggregated.paid.toLocaleString()}
               </div>
-              <div className="mt-1 text-[11px] font-medium text-[#E11D48]">
+              <div className="mt-1 text-[11px] font-medium text-neutral-700">
                 {aggregated.conversion}% visit → paid
               </div>
             </div>
 
             <div className="luma-card rounded-2xl p-4">
-              <div className="flex items-center justify-between text-xs font-medium text-[#64666B]">
+              <div className="flex items-center justify-between text-xs font-medium text-neutral-500">
                 <span>Monthly Churn</span>
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#FFF7ED] text-[#EA580C]">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-neutral-100 text-black">
                   <AlertTriangle className="h-3.5 w-3.5" />
                 </span>
               </div>
-              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-[#131517] tabular-nums">
+              <div className="mt-2.5 font-mono text-2xl font-semibold tracking-tight text-black tabular-nums">
                 {selectedProject
                   ? selectedProject.metrics[timeframe].churnRate
                   : aggregated.avgChurn}
               </div>
-              <div className="mt-1 text-[11px] text-[#73757C]">Active window ({timeframe})</div>
+              <div className="mt-1 text-[11px] text-neutral-500">Active window ({timeframe})</div>
             </div>
           </div>
 
@@ -310,15 +308,15 @@ export function OverviewView({
             <div className="luma-card rounded-2xl p-5 sm:col-span-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <div className="text-sm font-semibold text-[#131517]">
+                  <div className="text-sm font-semibold text-black">
                     Revenue Trajectory ({timeframe})
                   </div>
-                  <div className="text-xs text-[#73757C]">
+                  <div className="text-xs text-neutral-500">
                     Hover bars to inspect revenue vs visitors
                   </div>
                 </div>
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFF0F3] px-2.5 py-0.5 text-[11px] font-medium text-[#E11D48]">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#E11D48] animate-pulse-dot" />
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-black/15 bg-neutral-50 px-2.5 py-0.5 text-[11px] font-medium text-black">
+                  <span className="h-1.5 w-1.5 rounded-full bg-black animate-pulse-dot" />
                   Live
                 </span>
               </div>
@@ -338,8 +336,8 @@ export function OverviewView({
                       className="group relative flex h-full flex-1 flex-col items-center justify-end gap-2"
                     >
                       {isHovered && (
-                        <div className="pointer-events-none absolute -top-11 z-10 whitespace-nowrap rounded-xl border border-[#131517]/10 bg-[#131517] px-2.5 py-1.5 font-mono text-[11px] text-white shadow-lg">
-                          <span className="text-[#FDA4AF]">${bar.revenue.toLocaleString()}</span> ·{' '}
+                        <div className="pointer-events-none absolute -top-11 z-10 whitespace-nowrap rounded-xl border border-black/15 bg-black px-2.5 py-1.5 font-mono text-[11px] text-white shadow-lg">
+                          <span className="font-semibold">${bar.revenue.toLocaleString()}</span> ·{' '}
                           {bar.visitors.toLocaleString()} vis
                         </div>
                       )}
@@ -347,13 +345,13 @@ export function OverviewView({
                         style={{ height: `${heightPct}%` }}
                         className={`w-full rounded-t-lg transition-all duration-300 ${
                           bar.revenue === 0
-                            ? 'bg-[#FECDD3]/60 group-hover:bg-[#FDA4AF]'
+                            ? 'bg-neutral-200 group-hover:bg-neutral-300'
                             : isHovered
-                              ? 'bg-gradient-to-t from-[#E11D48] to-[#8B5CF6]'
-                              : 'bg-gradient-to-t from-[#FB7185]/85 to-[#A78BFA]/85'
+                              ? 'bg-black'
+                              : 'bg-neutral-800'
                         }`}
                       />
-                      <span className="font-mono text-[10px] font-medium text-[#73757C]">
+                      <span className="font-mono text-[10px] font-medium text-neutral-500">
                         {bar.label}
                       </span>
                     </div>
@@ -364,8 +362,8 @@ export function OverviewView({
 
             {/* Funnel Breakdown */}
             <div className="luma-card rounded-2xl p-5 sm:col-span-2">
-              <div className="text-sm font-semibold text-[#131517]">Conversion Funnel</div>
-              <div className="text-xs text-[#73757C]">Visitors to Stripe Paid</div>
+              <div className="text-sm font-semibold text-black">Conversion Funnel</div>
+              <div className="text-xs text-neutral-500">Visitors to Stripe Paid</div>
 
               <div className="mt-5 space-y-3.5">
                 {[
@@ -373,7 +371,7 @@ export function OverviewView({
                     label: 'Visitors',
                     val: aggregated.visitors,
                     pct: aggregated.visitors > 0 ? 100 : 0,
-                    color: 'bg-[#131517]',
+                    color: 'bg-black',
                   },
                   {
                     label: 'Signups',
@@ -381,7 +379,7 @@ export function OverviewView({
                     pct: Math.round(
                       (aggregated.signups / Math.max(aggregated.visitors, 1)) * 100
                     ),
-                    color: 'bg-[#7C3AED]',
+                    color: 'bg-neutral-700',
                   },
                   {
                     label: 'Trials / Active',
@@ -389,7 +387,7 @@ export function OverviewView({
                     pct: Math.round(
                       (aggregated.trials / Math.max(aggregated.visitors, 1)) * 100
                     ),
-                    color: 'bg-[#F97316]',
+                    color: 'bg-neutral-500',
                   },
                   {
                     label: 'Paid Users',
@@ -398,18 +396,18 @@ export function OverviewView({
                       aggregated.paid > 0 ? 4 : 0,
                       Math.round((aggregated.paid / Math.max(aggregated.visitors, 1)) * 100)
                     ),
-                    color: 'bg-[#E11D48]',
+                    color: 'bg-black',
                   },
                 ].map((step) => (
                   <div key={step.label}>
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-medium text-[#5C5E64]">{step.label}</span>
-                      <span className="font-mono text-[#131517] tabular-nums">
+                      <span className="font-medium text-neutral-600">{step.label}</span>
+                      <span className="font-mono text-black tabular-nums">
                         {step.val.toLocaleString()}{' '}
-                        <span className="text-[#8E9096]">({step.pct}%)</span>
+                        <span className="text-neutral-400">({step.pct}%)</span>
                       </span>
                     </div>
-                    <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-[#F2F1EE]">
+                    <div className="mt-1.5 h-2 w-full overflow-hidden rounded-full bg-neutral-200/80">
                       <div
                         className={`h-full rounded-full transition-all duration-300 ${step.color}`}
                         style={{ width: `${Math.min(100, step.pct)}%` }}
@@ -423,21 +421,21 @@ export function OverviewView({
 
           {/* Portfolio Table */}
           <div className="luma-card overflow-hidden rounded-2xl">
-            <div className="flex items-center justify-between border-b border-[#131517]/6 px-5 py-3.5">
+            <div className="flex items-center justify-between border-b border-black/8 px-5 py-3.5">
               <div>
-                <h3 className="text-sm font-semibold text-[#131517]">Shipped Portfolio</h3>
-                <p className="text-xs text-[#73757C]">
+                <h3 className="text-sm font-semibold text-black">Shipped Portfolio</h3>
+                <p className="text-xs text-neutral-500">
                   Click a row to filter · Log a test charge with +$29
                 </p>
               </div>
-              <span className="rounded-full bg-[#F5F4F1] px-2.5 py-1 font-mono text-[11px] font-medium text-[#5C5E64]">
+              <span className="rounded-full bg-neutral-100 px-2.5 py-1 font-mono text-[11px] font-medium text-neutral-600">
                 {projects.length} {projects.length === 1 ? 'app' : 'apps'}
               </span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="border-b border-[#131517]/6 bg-[#FAF9F7]/70 text-[11px] font-medium text-[#73757C]">
+                <thead className="border-b border-black/8 bg-neutral-50 text-[11px] font-medium text-neutral-500">
                   <tr>
                     <th className="px-5 py-2.5">Project</th>
                     <th className="px-3 py-2.5">Visitors</th>
@@ -447,7 +445,7 @@ export function OverviewView({
                     <th className="px-5 py-2.5 text-right">Quick Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#131517]/6">
+                <tbody className="divide-y divide-black/6">
                   {projects.map((project) => {
                     const m = project.metrics[timeframe];
                     const verdict = computeProjectVerdict(project, timeframe);
@@ -460,33 +458,29 @@ export function OverviewView({
                           onSelectId(selectedId === project.id ? 'all' : project.id)
                         }
                         className={`cursor-pointer transition ${
-                          isSelected ? 'bg-[#FFF0F3]/60' : 'hover:bg-[#FAF9F7]'
+                          isSelected ? 'bg-neutral-100' : 'hover:bg-neutral-50'
                         }`}
                       >
                         <td className="px-5 py-3">
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold text-[#131517]">{project.name}</span>
-                            <span className="rounded-md bg-[#F2F1EE] px-1.5 py-0.5 font-mono text-[10px] font-medium text-[#5C5E64]">
+                            <span className="font-semibold text-black">{project.name}</span>
+                            <span className="rounded-md bg-neutral-100 px-1.5 py-0.5 font-mono text-[10px] font-medium text-neutral-600">
                               {project.builtWith}
                             </span>
                           </div>
-                          <div className="mt-0.5 font-mono text-[11px] text-[#8E9096]">
+                          <div className="mt-0.5 font-mono text-[11px] text-neutral-400">
                             {project.domain} · {project.shippedAgo}
                           </div>
                         </td>
-                        <td className="px-3 py-3 font-mono text-[#3F4147] tabular-nums">
+                        <td className="px-3 py-3 font-mono text-neutral-700 tabular-nums">
                           {m.visitors.toLocaleString()}
                         </td>
-                        <td className="px-3 py-3 font-mono text-[#3F4147] tabular-nums">
+                        <td className="px-3 py-3 font-mono text-neutral-700 tabular-nums">
                           {m.signups.toLocaleString()}
                         </td>
-                        <td className="px-3 py-3 font-mono font-semibold text-[#131517] tabular-nums">
+                        <td className="px-3 py-3 font-mono font-semibold text-black tabular-nums">
                           ${m.mrr.toLocaleString()}
-                          <span
-                            className={`ml-1.5 text-[10px] font-medium ${
-                              m.mrr === 0 ? 'text-[#E11D48]' : 'text-[#059669]'
-                            }`}
-                          >
+                          <span className="ml-1.5 text-[10px] font-medium text-neutral-500">
                             {m.mrrDelta}
                           </span>
                         </td>
@@ -507,7 +501,7 @@ export function OverviewView({
                               type="button"
                               onClick={() => onQuickRevenue(project, 29)}
                               title="Log a $29 Stripe charge"
-                              className="rounded-lg border border-[#131517]/10 bg-white px-2 py-1 font-mono text-[11px] font-medium text-[#059669] transition hover:border-[#059669]/40 hover:bg-[#ECFDF5]"
+                              className="rounded-lg border border-black/15 bg-white px-2 py-1 font-mono text-[11px] font-medium text-black transition hover:bg-black hover:text-white"
                             >
                               +$29
                             </button>
@@ -515,7 +509,7 @@ export function OverviewView({
                               type="button"
                               onClick={() => onEditProject(project)}
                               title="Edit metrics"
-                              className="rounded-lg border border-[#131517]/10 bg-white p-1.5 text-[#5C5E64] transition hover:bg-[#F5F4F1] hover:text-[#131517]"
+                              className="rounded-lg border border-black/12 bg-white p-1.5 text-neutral-600 transition hover:bg-neutral-100 hover:text-black"
                             >
                               <Pencil className="h-3 w-3" />
                             </button>
@@ -533,56 +527,50 @@ export function OverviewView({
         {/* Right 4 Cols: Dynamic Verdict + Live Feed */}
         <div className="flex flex-col gap-6 lg:col-span-4">
           {focusProject && focusVerdict && (
-            <div className="luma-card relative overflow-hidden rounded-2xl p-5">
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -right-12 -top-12 h-36 w-36 rounded-full bg-gradient-to-br from-[#FF4D79]/15 to-[#8B5CF6]/15 blur-2xl"
-              />
-              <div className="relative">
-                <div className="flex items-center justify-between gap-2">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E11D48]">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Verdict · {focusProject.name}
-                  </span>
-                  <span
-                    className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
-                      VERDICT_BADGE[focusVerdict.status].className
-                    }`}
+            <div className="luma-card rounded-2xl p-5">
+              <div className="flex items-center justify-between gap-2">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-black">
+                  <Sparkles className="h-3.5 w-3.5" />
+                  Verdict · {focusProject.name}
+                </span>
+                <span
+                  className={`rounded-full border px-2.5 py-0.5 text-[11px] font-medium ${
+                    VERDICT_BADGE[focusVerdict.status].className
+                  }`}
+                >
+                  {VERDICT_BADGE[focusVerdict.status].label}
+                </span>
+              </div>
+
+              <h3 className="mt-3 text-base font-semibold tracking-tight text-black">
+                {focusVerdict.title}
+              </h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-neutral-600">
+                {focusVerdict.body}
+              </p>
+
+              <div className="mt-4 rounded-xl border border-black/10 bg-neutral-50 p-3.5">
+                <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-neutral-500">
+                  <span>Fix Prompt ({focusProject.builtWith})</span>
+                  <button
+                    type="button"
+                    onClick={handleCopyFix}
+                    className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-medium normal-case tracking-normal text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
                   >
-                    {VERDICT_BADGE[focusVerdict.status].label}
-                  </span>
+                    {copiedPrompt ? (
+                      <>
+                        <Check className="h-3 w-3 text-black" /> Copied
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="h-3 w-3" /> Copy
+                      </>
+                    )}
+                  </button>
                 </div>
-
-                <h3 className="mt-3 text-base font-semibold tracking-tight text-[#131517]">
-                  {focusVerdict.title}
-                </h3>
-                <p className="mt-1.5 text-xs leading-relaxed text-[#5C5E64]">
-                  {focusVerdict.body}
+                <p className="mt-2 font-mono text-[11px] leading-relaxed text-neutral-800">
+                  "{focusVerdict.fixPrompt}"
                 </p>
-
-                <div className="mt-4 rounded-xl border border-[#131517]/8 bg-[#FAF9F7] p-3.5">
-                  <div className="flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-[#73757C]">
-                    <span>Fix Prompt ({focusProject.builtWith})</span>
-                    <button
-                      type="button"
-                      onClick={handleCopyFix}
-                      className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-medium normal-case tracking-normal text-[#131517] ring-1 ring-[#131517]/10 transition hover:bg-[#F2F1EE]"
-                    >
-                      {copiedPrompt ? (
-                        <>
-                          <Check className="h-3 w-3 text-[#059669]" /> Copied
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3" /> Copy
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-[#2D2F34]">
-                    "{focusVerdict.fixPrompt}"
-                  </p>
-                </div>
               </div>
             </div>
           )}
@@ -591,13 +579,13 @@ export function OverviewView({
           <div className="luma-card flex-1 rounded-2xl p-5">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-[#131517]">Live Activity</h3>
-                <p className="text-xs text-[#73757C]">Real-time revenue, signups & deploys</p>
+                <h3 className="text-sm font-semibold text-black">Live Activity</h3>
+                <p className="text-xs text-neutral-500">Real-time revenue, signups & deploys</p>
               </div>
               <button
                 type="button"
                 onClick={() => onOpenLogEvent(selectedProject?.id)}
-                className="rounded-full bg-[#FAF9F7] px-2.5 py-1 text-[11px] font-medium text-[#131517] ring-1 ring-[#131517]/8 transition hover:bg-[#F2F1EE]"
+                className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-medium text-black ring-1 ring-black/10 transition hover:bg-neutral-200"
               >
                 + Record
               </button>
@@ -605,56 +593,52 @@ export function OverviewView({
 
             <div className="mt-4 space-y-2.5">
               {filteredEvents.length === 0 ? (
-                <div className="rounded-xl border border-dashed border-[#131517]/12 p-6 text-center text-xs text-[#73757C]">
+                <div className="rounded-xl border border-dashed border-black/15 p-6 text-center text-xs text-neutral-500">
                   No events recorded for this filter yet.
                 </div>
               ) : (
                 filteredEvents.map((ev) => (
                   <div
                     key={ev.id}
-                    className="flex items-start justify-between gap-2.5 rounded-xl border border-[#131517]/6 bg-[#FAF9F7]/75 px-3.5 py-2.5"
+                    className="flex items-start justify-between gap-2.5 rounded-xl border border-black/8 bg-neutral-50/80 px-3.5 py-2.5"
                   >
                     <div className="flex items-start gap-2.5">
-                      <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-[#131517]/8">
-                        {ev.type === 'revenue' && (
-                          <DollarSign className="h-3.5 w-3.5 text-[#059669]" />
-                        )}
+                      <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white ring-1 ring-black/10">
+                        {ev.type === 'revenue' && <DollarSign className="h-3.5 w-3.5 text-black" />}
                         {ev.type === 'dropoff' && (
-                          <XCircle className="h-3.5 w-3.5 text-[#E11D48]" />
+                          <XCircle className="h-3.5 w-3.5 text-neutral-500" />
                         )}
                         {ev.type === 'deploy' && (
-                          <GitCommit className="h-3.5 w-3.5 text-[#7C3AED]" />
+                          <GitCommit className="h-3.5 w-3.5 text-neutral-700" />
                         )}
                         {ev.type === 'signup' && (
-                          <ArrowUpRight className="h-3.5 w-3.5 text-[#EA580C]" />
+                          <ArrowUpRight className="h-3.5 w-3.5 text-neutral-700" />
                         )}
                         {ev.type === 'visitor' && (
-                          <Users className="h-3.5 w-3.5 text-[#2563EB]" />
+                          <Users className="h-3.5 w-3.5 text-neutral-600" />
                         )}
                       </div>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="text-xs font-semibold text-[#131517]">
+                          <span className="text-xs font-semibold text-black">
                             {ev.projectName}
                           </span>
-                          <span className="font-mono text-[10px] text-[#8E9096]">
+                          <span className="font-mono text-[10px] text-neutral-400">
                             {ev.label}
                           </span>
                         </div>
                         <div
                           className={`truncate font-mono text-[11px] ${
                             ev.type === 'revenue'
-                              ? 'font-medium text-[#059669]'
-                              : ev.type === 'dropoff'
-                                ? 'text-[#BE123C]'
-                                : 'text-[#5C5E64]'
+                              ? 'font-semibold text-black'
+                              : 'text-neutral-600'
                           }`}
                         >
                           {ev.detail}
                         </div>
                       </div>
                     </div>
-                    <span className="shrink-0 font-mono text-[10px] text-[#8E9096]">
+                    <span className="shrink-0 font-mono text-[10px] text-neutral-400">
                       {formatRelativeTime(ev.createdAt)}
                     </span>
                   </div>

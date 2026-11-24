@@ -111,7 +111,7 @@ export function ProjectModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. ShipPulse"
-                className="mt-1 w-full rounded-xl border border-[#131517]/12 bg-[#FAF9F7] px-3.5 py-2 text-sm text-[#131517] outline-none transition focus:border-[#E11D48] focus:bg-white"
+                className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 text-sm text-black outline-none transition focus:border-black focus:bg-white"
               />
             </div>
             <div>
@@ -121,7 +121,7 @@ export function ProjectModal({
                 value={domain}
                 onChange={(e) => setDomain(e.target.value)}
                 placeholder="shippulse.io"
-                className="mt-1 w-full rounded-xl border border-[#131517]/12 bg-[#FAF9F7] px-3.5 py-2 font-mono text-xs text-[#131517] outline-none transition focus:border-[#E11D48] focus:bg-white"
+                className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 font-mono text-xs text-black outline-none transition focus:border-black focus:bg-white"
               />
             </div>
           </div>
@@ -158,7 +158,7 @@ export function ProjectModal({
                   min={0}
                   value={visitors}
                   onChange={(e) => setVisitors(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-[#131517]/10 bg-white px-2.5 py-1.5 font-mono text-xs text-[#131517] outline-none focus:border-[#E11D48]"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
@@ -168,7 +168,7 @@ export function ProjectModal({
                   min={0}
                   value={signups}
                   onChange={(e) => setSignups(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-[#131517]/10 bg-white px-2.5 py-1.5 font-mono text-xs text-[#131517] outline-none focus:border-[#E11D48]"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
@@ -178,7 +178,7 @@ export function ProjectModal({
                   min={0}
                   value={trials}
                   onChange={(e) => setTrials(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-[#131517]/10 bg-white px-2.5 py-1.5 font-mono text-xs text-[#131517] outline-none focus:border-[#E11D48]"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
@@ -188,7 +188,7 @@ export function ProjectModal({
                   min={0}
                   value={paid}
                   onChange={(e) => setPaid(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-[#131517]/10 bg-white px-2.5 py-1.5 font-mono text-xs text-[#131517] outline-none focus:border-[#E11D48]"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
@@ -198,7 +198,7 @@ export function ProjectModal({
                   min={0}
                   value={mrr}
                   onChange={(e) => setMrr(e.target.value)}
-                  className="mt-1 w-full rounded-lg border border-[#131517]/10 bg-white px-2.5 py-1.5 font-mono text-xs text-[#131517] outline-none focus:border-[#E11D48]"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
                 />
               </div>
               <div>
@@ -208,7 +208,7 @@ export function ProjectModal({
                   value={churnRate}
                   onChange={(e) => setChurnRate(e.target.value)}
                   placeholder="2.1%"
-                  className="mt-1 w-full rounded-lg border border-[#131517]/10 bg-white px-2.5 py-1.5 font-mono text-xs text-[#131517] outline-none focus:border-[#E11D48]"
+                  className="mt-1 w-full rounded-lg border border-black/12 bg-white px-2.5 py-1.5 font-mono text-xs text-black outline-none focus:border-black"
                 />
               </div>
             </div>

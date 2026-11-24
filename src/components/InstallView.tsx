@@ -43,7 +43,7 @@ export function InstallView({
 
   if (!activeProject) {
     return (
-      <div className="luma-card rounded-2xl p-10 text-center text-sm text-[#64666B]">
+      <div className="luma-card rounded-2xl p-10 text-center text-sm text-neutral-500">
         Add a project first to generate its API key and live tracking snippet.
       </div>
     );
@@ -104,10 +104,10 @@ export function InstallView({
     <div className="mx-auto max-w-4xl space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-[#131517]">
+          <h2 className="text-xl font-semibold tracking-tight text-black">
             Install & Live Endpoints
           </h2>
-          <p className="text-xs text-[#64666B]">
+          <p className="text-xs text-neutral-500">
             Drop the script tag or Stripe webhook URL into any shipped app to stream live events.
           </p>
         </div>
@@ -119,7 +119,7 @@ export function InstallView({
             setBeaconStatus('idle');
             setBeaconMessage('');
           }}
-          className="rounded-full border border-[#131517]/12 bg-white px-4 py-2 text-xs font-semibold text-[#131517] outline-none focus:border-[#E11D48]/50"
+          className="rounded-full border border-black/15 bg-white px-4 py-2 text-xs font-semibold text-black outline-none focus:border-black"
         >
           {projects.map((p) => (
             <option key={p.id} value={p.id}>
@@ -129,17 +129,16 @@ export function InstallView({
         </select>
       </div>
 
-      {/* Project Key & Live Test Banner */}
       <div className="luma-card flex flex-wrap items-center justify-between gap-3 rounded-2xl p-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F5F3FF] text-[#7C3AED]">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-neutral-100 text-black">
             <KeyRound className="h-4 w-4" />
           </div>
           <div>
-            <div className="text-xs font-semibold text-[#131517]">
+            <div className="text-xs font-semibold text-black">
               {activeProject.name} Project Key
             </div>
-            <div className="font-mono text-xs text-[#64666B]">{activeProject.apiKey}</div>
+            <div className="font-mono text-xs text-neutral-500">{activeProject.apiKey}</div>
           </div>
         </div>
 
@@ -149,13 +148,13 @@ export function InstallView({
               type="button"
               onClick={sendTestBeacon}
               disabled={beaconStatus === 'sending'}
-              className="inline-flex items-center gap-1.5 rounded-full bg-[#131517] px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-[#2A2D32] disabled:opacity-60"
+              className="inline-flex items-center gap-1.5 rounded-full bg-black px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-800 disabled:opacity-60"
             >
-              <Radio className="h-3.5 w-3.5 text-[#FDA4AF]" />
+              <Radio className="h-3.5 w-3.5" />
               {beaconStatus === 'sending' ? 'Pinging...' : 'Send Live Test Beacon'}
             </button>
           ) : (
-            <span className="rounded-full bg-[#FFF7ED] px-3 py-1 text-[11px] font-medium text-[#C2410C]">
+            <span className="rounded-full border border-black/12 bg-neutral-50 px-3 py-1 text-[11px] font-medium text-neutral-600">
               Sign in to activate live Supabase ingestion for this key
             </span>
           )}
@@ -166,17 +165,16 @@ export function InstallView({
         <div
           className={`rounded-2xl border px-4 py-3 text-xs font-medium ${
             beaconStatus === 'ok'
-              ? 'border-[#A7F3D0] bg-[#ECFDF5] text-[#047857]'
-              : 'border-[#FECDD3] bg-[#FFF1F2] text-[#BE123C]'
+              ? 'border-black/20 bg-neutral-100 text-black'
+              : 'border-black bg-black text-white'
           }`}
         >
           {beaconMessage}
         </div>
       )}
 
-      {/* 1-Prompt Setup Card */}
       <div className="luma-card overflow-hidden rounded-2xl">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-[#131517]/8 bg-[#FAF9F7]/80 px-5 py-3.5">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-black/8 bg-neutral-50 px-5 py-3.5">
           <div className="flex flex-wrap items-center gap-1.5">
             {TOOLS.map((tool) => (
               <button
@@ -188,8 +186,8 @@ export function InstallView({
                 }}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                   activeTool === tool
-                    ? 'bg-[#131517] text-white'
-                    : 'text-[#5C5E64] hover:bg-white hover:text-[#131517]'
+                    ? 'bg-black text-white'
+                    : 'text-neutral-600 hover:bg-white hover:text-black'
                 }`}
               >
                 {tool}
@@ -200,11 +198,11 @@ export function InstallView({
           <button
             type="button"
             onClick={copyPrompt}
-            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-[#131517] ring-1 ring-[#131517]/10 transition hover:bg-[#F5F4F1]"
+            className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-1.5 text-xs font-medium text-black ring-1 ring-black/12 transition hover:bg-neutral-100"
           >
             {copiedPrompt ? (
               <>
-                <Check className="h-3.5 w-3.5 text-[#059669]" /> Copied Prompt
+                <Check className="h-3.5 w-3.5 text-black" /> Copied Prompt
               </>
             ) : (
               <>
@@ -215,31 +213,30 @@ export function InstallView({
         </div>
 
         <div className="p-5">
-          <div className="mb-3 flex items-center gap-1.5 text-xs text-[#64666B]">
-            <Terminal className="h-3.5 w-3.5 text-[#E11D48]" />
+          <div className="mb-3 flex items-center gap-1.5 text-xs text-neutral-500">
+            <Terminal className="h-3.5 w-3.5 text-black" />
             {generated.note}
           </div>
-          <pre className="overflow-x-auto rounded-xl border border-[#131517]/8 bg-[#FAF9F7] p-4 font-mono text-xs leading-relaxed text-[#131517]">
+          <pre className="overflow-x-auto rounded-xl border border-black/10 bg-neutral-50 p-4 font-mono text-xs leading-relaxed text-black">
             <code>{generated.prompt}</code>
           </pre>
         </div>
       </div>
 
-      {/* Direct HTML Script Tag */}
       <div className="luma-card rounded-2xl p-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-semibold text-[#131517]">
-            <Code2 className="h-4 w-4 text-[#7C3AED]" />
+          <div className="flex items-center gap-2 text-sm font-semibold text-black">
+            <Code2 className="h-4 w-4 text-black" />
             Live Tracking Script Tag
           </div>
           <button
             type="button"
             onClick={copyScript}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#FAF9F7] px-3 py-1 text-xs font-medium text-[#131517] ring-1 ring-[#131517]/8 transition hover:bg-[#F2F1EE]"
+            className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-black ring-1 ring-black/10 transition hover:bg-neutral-200"
           >
             {copiedScript ? (
               <>
-                <Check className="h-3 w-3 text-[#059669]" /> Copied
+                <Check className="h-3 w-3 text-black" /> Copied
               </>
             ) : (
               <>
@@ -248,26 +245,25 @@ export function InstallView({
             )}
           </button>
         </div>
-        <pre className="mt-3 overflow-x-auto rounded-xl border border-[#131517]/8 bg-[#FAF9F7] p-3.5 font-mono text-xs text-[#131517]">
+        <pre className="mt-3 overflow-x-auto rounded-xl border border-black/10 bg-neutral-50 p-3.5 font-mono text-xs text-black">
           <code>{scriptSnippet}</code>
         </pre>
       </div>
 
-      {/* Stripe Webhook Endpoint */}
       <div className="luma-card rounded-2xl p-5">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm font-semibold text-[#131517]">
-            <Webhook className="h-4 w-4 text-[#059669]" />
+          <div className="flex items-center gap-2 text-sm font-semibold text-black">
+            <Webhook className="h-4 w-4 text-black" />
             Stripe Webhook Endpoint
           </div>
           <button
             type="button"
             onClick={copyWebhook}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#FAF9F7] px-3 py-1 text-xs font-medium text-[#131517] ring-1 ring-[#131517]/8 transition hover:bg-[#F2F1EE]"
+            className="inline-flex items-center gap-1.5 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-black ring-1 ring-black/10 transition hover:bg-neutral-200"
           >
             {copiedWebhook ? (
               <>
-                <Check className="h-3 w-3 text-[#059669]" /> Copied
+                <Check className="h-3 w-3 text-black" /> Copied
               </>
             ) : (
               <>
@@ -276,22 +272,22 @@ export function InstallView({
             )}
           </button>
         </div>
-        <p className="mt-1.5 text-xs text-[#64666B]">
+        <p className="mt-1.5 text-xs text-neutral-500">
           Add this URL in Stripe Developers → Webhooks for{' '}
-          <code className="rounded bg-[#F2F1EE] px-1 py-0.5 font-mono text-[11px]">
+          <code className="rounded bg-neutral-100 px-1 py-0.5 font-mono text-[11px] text-black">
             checkout.session.completed
           </code>
           ,{' '}
-          <code className="rounded bg-[#F2F1EE] px-1 py-0.5 font-mono text-[11px]">
+          <code className="rounded bg-neutral-100 px-1 py-0.5 font-mono text-[11px] text-black">
             invoice.paid
           </code>
           , and{' '}
-          <code className="rounded bg-[#F2F1EE] px-1 py-0.5 font-mono text-[11px]">
+          <code className="rounded bg-neutral-100 px-1 py-0.5 font-mono text-[11px] text-black">
             customer.subscription.deleted
           </code>
           .
         </p>
-        <pre className="mt-3 overflow-x-auto rounded-xl border border-[#131517]/8 bg-[#FAF9F7] p-3.5 font-mono text-xs text-[#131517]">
+        <pre className="mt-3 overflow-x-auto rounded-xl border border-black/10 bg-neutral-50 p-3.5 font-mono text-xs text-black">
           <code>{webhookUrl}</code>
         </pre>
       </div>

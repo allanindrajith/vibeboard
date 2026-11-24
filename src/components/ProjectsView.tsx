@@ -58,30 +58,29 @@ export function ProjectsView({
 
   return (
     <div className="space-y-6">
-      {/* Header + Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-[#131517]">
+          <h2 className="text-xl font-semibold tracking-tight text-black">
             Shipped Apps ({projects.length})
           </h2>
-          <p className="text-xs text-[#64666B]">
+          <p className="text-xs text-neutral-500">
             Manage domains, API keys, and live Ship-to-Revenue metrics across your portfolio.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5">
           <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-[#8E9096]" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-neutral-400" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search apps or domains..."
-              className="w-56 rounded-full border border-[#131517]/10 bg-white py-1.5 pl-8 pr-3.5 text-xs text-[#131517] placeholder-[#8E9096] outline-none transition focus:border-[#E11D48]/50 focus:ring-2 focus:ring-[#E11D48]/10"
+              className="w-56 rounded-full border border-black/12 bg-white py-1.5 pl-8 pr-3.5 text-xs text-black placeholder-neutral-400 outline-none transition focus:border-black"
             />
           </div>
 
-          <div className="flex items-center rounded-full bg-white p-0.5 ring-1 ring-[#131517]/8">
+          <div className="flex items-center rounded-full bg-white p-0.5 ring-1 ring-black/10">
             {(['ALL', 'SCALE', 'OPTIMIZE', 'KILL_OR_PIVOT'] as const).map((status) => (
               <button
                 key={status}
@@ -89,8 +88,8 @@ export function ProjectsView({
                 onClick={() => setVerdictFilter(status)}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                   verdictFilter === status
-                    ? 'bg-[#131517] text-white'
-                    : 'text-[#64666B] hover:text-[#131517]'
+                    ? 'bg-black text-white'
+                    : 'text-neutral-500 hover:text-black'
                 }`}
               >
                 {status === 'ALL' ? 'All' : VERDICT_BADGE[status].label}
@@ -101,7 +100,7 @@ export function ProjectsView({
           <button
             type="button"
             onClick={onAddProject}
-            className="inline-flex items-center gap-1.5 rounded-full bg-[#131517] px-4 py-1.5 text-xs font-medium text-white transition hover:bg-[#2A2D32]"
+            className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-1.5 text-xs font-medium text-white transition hover:bg-neutral-800"
           >
             <Plus className="h-3.5 w-3.5" />
             Add App
@@ -109,9 +108,8 @@ export function ProjectsView({
         </div>
       </div>
 
-      {/* Project Cards Grid */}
       {filtered.length === 0 ? (
-        <div className="luma-card rounded-2xl p-10 text-center text-sm text-[#64666B]">
+        <div className="luma-card rounded-2xl p-10 text-center text-sm text-neutral-500">
           No projects match your current filter.
         </div>
       ) : (
@@ -133,11 +131,11 @@ export function ProjectsView({
                         <button
                           type="button"
                           onClick={() => onInspectProject(project.id)}
-                          className="text-base font-semibold text-[#131517] hover:text-[#E11D48]"
+                          className="text-base font-semibold text-black hover:underline"
                         >
                           {project.name}
                         </button>
-                        <span className="rounded-md bg-[#F2F1EE] px-2 py-0.5 font-mono text-[10px] font-medium text-[#5C5E64]">
+                        <span className="rounded-md bg-neutral-100 px-2 py-0.5 font-mono text-[10px] font-medium text-neutral-600">
                           {project.builtWith}
                         </span>
                       </div>
@@ -145,7 +143,7 @@ export function ProjectsView({
                         href={`https://${project.domain}`}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-0.5 inline-flex items-center gap-1 font-mono text-xs text-[#73757C] hover:text-[#131517]"
+                        className="mt-0.5 inline-flex items-center gap-1 font-mono text-xs text-neutral-500 hover:text-black"
                       >
                         {project.domain}
                         <ExternalLink className="h-3 w-3" />
@@ -160,48 +158,46 @@ export function ProjectsView({
                     </span>
                   </div>
 
-                  {/* Mini KPI Row */}
-                  <div className="mt-4 grid grid-cols-4 gap-2 rounded-xl bg-[#FAF9F7] p-3">
+                  <div className="mt-4 grid grid-cols-4 gap-2 rounded-xl bg-neutral-50 p-3">
                     <div>
-                      <div className="text-[10px] text-[#73757C]">MRR ({timeframe})</div>
-                      <div className="mt-0.5 font-mono text-sm font-semibold text-[#131517] tabular-nums">
+                      <div className="text-[10px] text-neutral-500">MRR ({timeframe})</div>
+                      <div className="mt-0.5 font-mono text-sm font-semibold text-black tabular-nums">
                         ${m.mrr.toLocaleString()}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-[#73757C]">Visitors</div>
-                      <div className="mt-0.5 font-mono text-sm font-medium text-[#3F4147] tabular-nums">
+                      <div className="text-[10px] text-neutral-500">Visitors</div>
+                      <div className="mt-0.5 font-mono text-sm font-medium text-neutral-700 tabular-nums">
                         {m.visitors.toLocaleString()}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-[#73757C]">Signups</div>
-                      <div className="mt-0.5 font-mono text-sm font-medium text-[#3F4147] tabular-nums">
+                      <div className="text-[10px] text-neutral-500">Signups</div>
+                      <div className="mt-0.5 font-mono text-sm font-medium text-neutral-700 tabular-nums">
                         {m.signups.toLocaleString()}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[10px] text-[#73757C]">Paid</div>
-                      <div className="mt-0.5 font-mono text-sm font-medium text-[#E11D48] tabular-nums">
+                      <div className="text-[10px] text-neutral-500">Paid</div>
+                      <div className="mt-0.5 font-mono text-sm font-semibold text-black tabular-nums">
                         {m.paid.toLocaleString()}
                       </div>
                     </div>
                   </div>
 
-                  {/* API Key Bar */}
-                  <div className="mt-3 flex items-center justify-between rounded-xl border border-[#131517]/6 bg-white px-3 py-2">
-                    <div className="flex items-center gap-2 font-mono text-[11px] text-[#5C5E64]">
-                      <KeyRound className="h-3.5 w-3.5 text-[#8E9096]" />
+                  <div className="mt-3 flex items-center justify-between rounded-xl border border-black/8 bg-white px-3 py-2">
+                    <div className="flex items-center gap-2 font-mono text-[11px] text-neutral-600">
+                      <KeyRound className="h-3.5 w-3.5 text-neutral-400" />
                       <span>{project.apiKey}</span>
                     </div>
                     <button
                       type="button"
                       onClick={() => copyKey(project)}
-                      className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium text-[#5C5E64] transition hover:bg-[#F5F4F1] hover:text-[#131517]"
+                      className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[11px] font-medium text-neutral-600 transition hover:bg-neutral-100 hover:text-black"
                     >
                       {copiedKeyId === project.id ? (
                         <>
-                          <Check className="h-3 w-3 text-[#059669]" /> Copied
+                          <Check className="h-3 w-3 text-black" /> Copied
                         </>
                       ) : (
                         <>
@@ -212,22 +208,21 @@ export function ProjectsView({
                   </div>
                 </div>
 
-                {/* Card Footer Actions */}
-                <div className="mt-4 flex items-center justify-between border-t border-[#131517]/6 pt-3.5">
+                <div className="mt-4 flex items-center justify-between border-t border-black/8 pt-3.5">
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
                       onClick={() => onInspectProject(project.id)}
-                      className="rounded-full bg-[#131517] px-3 py-1 text-xs font-medium text-white transition hover:bg-[#2A2D32]"
+                      className="rounded-full bg-black px-3 py-1 text-xs font-medium text-white transition hover:bg-neutral-800"
                     >
                       Analytics
                     </button>
                     <button
                       type="button"
                       onClick={() => onOpenInstall(project.id)}
-                      className="inline-flex items-center gap-1 rounded-full bg-[#FAF9F7] px-3 py-1 text-xs font-medium text-[#131517] ring-1 ring-[#131517]/8 transition hover:bg-[#F2F1EE]"
+                      className="inline-flex items-center gap-1 rounded-full bg-neutral-100 px-3 py-1 text-xs font-medium text-black ring-1 ring-black/10 transition hover:bg-neutral-200"
                     >
-                      <Terminal className="h-3 w-3 text-[#7C3AED]" />
+                      <Terminal className="h-3 w-3 text-black" />
                       Install
                     </button>
                   </div>
@@ -236,7 +231,7 @@ export function ProjectsView({
                     <button
                       type="button"
                       onClick={() => onEditProject(project)}
-                      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-[#5C5E64] transition hover:bg-[#F5F4F1] hover:text-[#131517]"
+                      className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-neutral-600 transition hover:bg-neutral-100 hover:text-black"
                     >
                       <Pencil className="h-3 w-3" />
                       Edit
@@ -245,7 +240,7 @@ export function ProjectsView({
                       type="button"
                       onClick={() => onDeleteProject(project.id)}
                       title="Delete project"
-                      className="rounded-full p-1.5 text-[#8E9096] transition hover:bg-[#FFF1F2] hover:text-[#BE123C]"
+                      className="rounded-full p-1.5 text-neutral-400 transition hover:bg-neutral-100 hover:text-black"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>

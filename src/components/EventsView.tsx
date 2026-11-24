@@ -41,10 +41,10 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold tracking-tight text-[#131517]">
+          <h2 className="text-xl font-semibold tracking-tight text-black">
             Event Stream ({filtered.length})
           </h2>
-          <p className="text-xs text-[#64666B]">
+          <p className="text-xs text-neutral-500">
             Every recorded payment, signup, drop-off, and deploy updates your portfolio KPIs live.
           </p>
         </div>
@@ -52,14 +52,13 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
         <button
           type="button"
           onClick={() => onOpenLogEvent(projectFilter === 'all' ? undefined : projectFilter)}
-          className="inline-flex items-center gap-1.5 rounded-full bg-[#131517] px-4 py-2 text-xs font-medium text-white transition hover:bg-[#2A2D32]"
+          className="inline-flex items-center gap-1.5 rounded-full bg-black px-4 py-2 text-xs font-medium text-white transition hover:bg-neutral-800"
         >
           <Plus className="h-3.5 w-3.5" />
           Log Event
         </button>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-1.5">
           {EVENT_TYPES.map((t) => (
@@ -69,8 +68,8 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
               onClick={() => setTypeFilter(t.id)}
               className={`rounded-full px-3 py-1 text-xs font-medium transition ${
                 typeFilter === t.id
-                  ? 'bg-[#131517] text-white'
-                  : 'bg-white text-[#5C5E64] ring-1 ring-[#131517]/8 hover:text-[#131517]'
+                  ? 'bg-black text-white'
+                  : 'bg-white text-neutral-600 ring-1 ring-black/10 hover:text-black'
               }`}
             >
               {t.label}
@@ -81,7 +80,7 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
         <select
           value={projectFilter}
           onChange={(e) => setProjectFilter(e.target.value)}
-          className="rounded-full border border-[#131517]/10 bg-white px-3.5 py-1.5 text-xs font-medium text-[#131517] outline-none focus:border-[#E11D48]/50"
+          className="rounded-full border border-black/12 bg-white px-3.5 py-1.5 text-xs font-medium text-black outline-none focus:border-black"
         >
           <option value="all">All Projects</option>
           {projects.map((p) => (
@@ -92,45 +91,36 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
         </select>
       </div>
 
-      {/* Event Table */}
       <div className="luma-card overflow-hidden rounded-2xl">
         {filtered.length === 0 ? (
-          <div className="p-10 text-center text-sm text-[#64666B]">
+          <div className="p-10 text-center text-sm text-neutral-500">
             No events match this filter. Click "Log Event" to record a payment, signup, or deploy.
           </div>
         ) : (
-          <div className="divide-y divide-[#131517]/6">
+          <div className="divide-y divide-black/6">
             {filtered.map((ev) => (
               <div
                 key={ev.id}
-                className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 transition hover:bg-[#FAF9F7]/70"
+                className="flex flex-wrap items-center justify-between gap-3 px-5 py-3.5 transition hover:bg-neutral-50"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#FAF9F7] ring-1 ring-[#131517]/8">
-                    {ev.type === 'revenue' && (
-                      <DollarSign className="h-4 w-4 text-[#059669]" />
-                    )}
-                    {ev.type === 'dropoff' && <XCircle className="h-4 w-4 text-[#E11D48]" />}
-                    {ev.type === 'deploy' && <GitCommit className="h-4 w-4 text-[#7C3AED]" />}
-                    {ev.type === 'signup' && <ArrowUpRight className="h-4 w-4 text-[#EA580C]" />}
-                    {ev.type === 'visitor' && <Users className="h-4 w-4 text-[#2563EB]" />}
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-neutral-100 ring-1 ring-black/8">
+                    {ev.type === 'revenue' && <DollarSign className="h-4 w-4 text-black" />}
+                    {ev.type === 'dropoff' && <XCircle className="h-4 w-4 text-neutral-500" />}
+                    {ev.type === 'deploy' && <GitCommit className="h-4 w-4 text-neutral-700" />}
+                    {ev.type === 'signup' && <ArrowUpRight className="h-4 w-4 text-neutral-700" />}
+                    {ev.type === 'visitor' && <Users className="h-4 w-4 text-neutral-600" />}
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-[#131517]">
-                        {ev.projectName}
-                      </span>
-                      <span className="rounded bg-[#F2F1EE] px-1.5 py-0.5 font-mono text-[10px] text-[#5C5E64]">
+                      <span className="text-xs font-semibold text-black">{ev.projectName}</span>
+                      <span className="rounded bg-neutral-100 px-1.5 py-0.5 font-mono text-[10px] text-neutral-600">
                         {ev.label}
                       </span>
                     </div>
                     <div
                       className={`mt-0.5 font-mono text-xs ${
-                        ev.type === 'revenue'
-                          ? 'font-medium text-[#059669]'
-                          : ev.type === 'dropoff'
-                            ? 'text-[#BE123C]'
-                            : 'text-[#5C5E64]'
+                        ev.type === 'revenue' ? 'font-semibold text-black' : 'text-neutral-600'
                       }`}
                     >
                       {ev.detail}
@@ -140,11 +130,11 @@ export function EventsView({ projects, events, onOpenLogEvent }: EventsViewProps
 
                 <div className="flex items-center gap-3">
                   {ev.amount !== undefined && (
-                    <span className="rounded-full bg-[#ECFDF5] px-2.5 py-0.5 font-mono text-xs font-semibold text-[#047857]">
+                    <span className="rounded-full bg-black px-2.5 py-0.5 font-mono text-xs font-semibold text-white">
                       +${ev.amount}
                     </span>
                   )}
-                  <span className="font-mono text-[11px] text-[#8E9096]">
+                  <span className="font-mono text-[11px] text-neutral-400">
                     {formatRelativeTime(ev.createdAt)}
                   </span>
                 </div>

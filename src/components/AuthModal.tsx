@@ -86,7 +86,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@domain.com"
-                className="w-full rounded-xl border border-[#131517]/12 bg-[#FAF9F7] py-2 pl-9 pr-3 text-sm text-[#131517] outline-none transition focus:border-[#E11D48] focus:bg-white"
+                className="w-full rounded-xl border border-black/12 bg-neutral-50 py-2 pl-9 pr-3 text-sm text-black outline-none transition focus:border-black focus:bg-white"
               />
             </div>
           </div>
@@ -102,19 +102,19 @@ export function AuthModal({ onClose }: AuthModalProps) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Min 6 characters"
-                className="w-full rounded-xl border border-[#131517]/12 bg-[#FAF9F7] py-2 pl-9 pr-3 text-sm text-[#131517] outline-none transition focus:border-[#E11D48] focus:bg-white"
+                className="w-full rounded-xl border border-black/12 bg-neutral-50 py-2 pl-9 pr-3 text-sm text-black outline-none transition focus:border-black focus:bg-white"
               />
             </div>
           </div>
 
           {error && (
-            <div className="rounded-xl border border-[#FECDD3] bg-[#FFF1F2] px-3 py-2 text-xs text-[#BE123C]">
+            <div className="rounded-xl border border-black bg-black px-3 py-2 text-xs text-white">
               {error}
             </div>
           )}
 
           {notice && (
-            <div className="rounded-xl border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-2 text-xs text-[#047857]">
+            <div className="rounded-xl border border-black/20 bg-neutral-100 px-3 py-2 text-xs text-black">
               {notice}
             </div>
           )}
@@ -122,14 +122,14 @@ export function AuthModal({ onClose }: AuthModalProps) {
           <button
             type="submit"
             disabled={loading}
-            className="flex w-full items-center justify-center gap-2 rounded-full bg-[#131517] py-2.5 text-xs font-medium text-white transition hover:bg-[#2A2D32] disabled:opacity-60"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-black py-2.5 text-xs font-medium text-white transition hover:bg-neutral-800 disabled:opacity-60"
           >
             {loading && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
             {mode === 'signin' ? 'Sign In' : 'Create Account'}
           </button>
         </form>
 
-        <div className="mt-4 text-center text-xs text-[#64666B]">
+        <div className="mt-4 text-center text-xs text-neutral-500">
           {mode === 'signin' ? (
             <>
               No account yet?{' '}
@@ -140,7 +140,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                   setError(null);
                   setNotice(null);
                 }}
-                className="font-semibold text-[#E11D48] hover:underline"
+                className="font-semibold text-black underline"
               >
                 Sign up
               </button>
@@ -155,7 +155,7 @@ export function AuthModal({ onClose }: AuthModalProps) {
                   setError(null);
                   setNotice(null);
                 }}
-                className="font-semibold text-[#E11D48] hover:underline"
+                className="font-semibold text-black underline"
               >
                 Sign in
               </button>

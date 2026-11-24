@@ -94,7 +94,7 @@ export function LogEventModal({
             <select
               value={projectId}
               onChange={(e) => setProjectId(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-[#131517]/12 bg-[#FAF9F7] px-3.5 py-2 text-sm text-[#131517] outline-none focus:border-[#E11D48] focus:bg-white"
+              className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 text-sm text-black outline-none focus:border-black focus:bg-white"
             >
               {projects.map((p) => (
                 <option key={p.id} value={p.id}>
@@ -140,7 +140,7 @@ export function LogEventModal({
                 min={1}
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-[#131517]/12 bg-[#FAF9F7] px-3.5 py-2 font-mono text-sm text-[#131517] outline-none focus:border-[#E11D48] focus:bg-white"
+                className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 font-mono text-sm text-black outline-none focus:border-black focus:bg-white"
               />
             </div>
           )}
@@ -153,7 +153,7 @@ export function LogEventModal({
                 min={1}
                 value={count}
                 onChange={(e) => setCount(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-[#131517]/12 bg-[#FAF9F7] px-3.5 py-2 font-mono text-sm text-[#131517] outline-none focus:border-[#E11D48] focus:bg-white"
+                className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 font-mono text-sm text-black outline-none focus:border-black focus:bg-white"
               />
             </div>
           )}
@@ -164,7 +164,7 @@ export function LogEventModal({
               type="text"
               value={detail}
               onChange={(e) => setDetail(e.target.value)}
-              className="mt-1 w-full rounded-xl border border-[#131517]/12 bg-[#FAF9F7] px-3.5 py-2 text-sm text-[#131517] outline-none focus:border-[#E11D48] focus:bg-white"
+              className="mt-1 w-full rounded-xl border border-black/12 bg-neutral-50 px-3.5 py-2 text-sm text-black outline-none focus:border-black focus:bg-white"
             />
           </div>
 
