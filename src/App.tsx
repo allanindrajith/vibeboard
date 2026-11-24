@@ -1,322 +1,425 @@
-import { type FormEvent, useState } from 'react';
+import { type ChangeEvent, useEffect, useRef, useState } from 'react';
+import type { User } from '@supabase/supabase-js';
 import {
-  ArrowRight,
+  Activity,
   BarChart3,
-  Check,
-  CreditCard,
-  GitBranch,
-  Layers,
-  ShieldCheck,
-  Sparkles,
-  X,
+  Cloud,
+  CloudOff,
+  Download,
+  FolderKanban,
+  LayoutDashboard,
+  LogOut,
+  MoreHorizontal,
+  Plus,
+  RotateCcw,
+  Terminal,
+  Upload,
 } from 'lucide-react';
-import { InteractiveDashboard } from './components/InteractiveDashboard';
-import { PromptSetupSection } from './components/PromptSetupSection';
-import { PricingSection } from './components/PricingSection';
+import { supabase } from './lib/supabase';
+import { useVibeBoard } from './store/useVibeBoard';
+import type { AppView, Project, Timeframe } from './types';
+import { OverviewView } from './components/OverviewView';
+import { ProjectsView } from './components/ProjectsView';
+import { EventsView } from './components/EventsView';
+import { InstallView } from './components/InstallView';
+import { ProjectModal } from './components/ProjectModal';
+import { LogEventModal } from './components/LogEventModal';
+import { AuthModal } from './components/AuthModal';
+
+const NAV_ITEMS: { id: AppView; label: string; icon: typeof LayoutDashboard }[] = [
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+  { id: 'projects', label: 'Projects', icon: FolderKanban },
+  { id: 'events', label: 'Events', icon: Activity },
+  { id: 'install', label: 'Install', icon: Terminal },
+];
 
 export default function App() {
-  const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
 
-  const handleWaitlist = (e: FormEvent) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    setSubmitted(true);
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
+  const {
+    projects,
+    events,
+    isCloud,
+    syncing,
+    refreshCloud,
+    addProject,
+    updateProject,
+    deleteProject,
+    logEvent,
+    exportJson,
+    importJson,
+    resetDemoData,
+  } = useVibeBoard(user);
+
+  const [view, setView] = useState<AppView>('overview');
+  const [timeframe, setTimeframe] = useState<Timeframe>('7D');
+  const [selectedId, setSelectedId] = useState<string>('all');
+  const [installProjectId, setInstallProjectId] = useState<string | undefined>(undefined);
+
+  const [projectModal, setProjectModal] = useState<{
+    open: boolean;
+    mode: 'create' | 'edit';
+    project: Project | null;
+  }>({ open: false, mode: 'create', project: null });
+
+  const [eventModal, setEventModal] = useState<{ open: boolean; projectId?: string }>({
+    open: false,
+  });
+
+  const [menuOpen, setMenuOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleImportFile = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        importJson(reader.result);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+    setMenuOpen(false);
   };
 
-  const scrollToWaitlist = (plan?: string) => {
-    if (plan) setSelectedPlan(plan);
-    document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
+  const handleDeleteProject = async (id: string) => {
+    await deleteProject(id);
+    if (selectedId === id) setSelectedId('all');
+  };
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setSelectedId('all');
+    setMenuOpen(false);
   };
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-zinc-100">
-      {/* Top Navbar */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-[#09090b]/80 backdrop-blur-md">
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <a href="#" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-500/15">
-              <BarChart3 className="h-4 w-4 text-emerald-400" />
-            </div>
-            <span className="text-base font-bold tracking-tight text-white">VibeBoard</span>
-            <span className="hidden rounded border border-white/10 bg-zinc-900 px-1.5 py-0.5 font-mono text-[10px] text-zinc-400 sm:inline">
-              BETA
-            </span>
-          </a>
-
-          <nav className="hidden items-center gap-7 text-xs font-medium text-zinc-400 md:flex">
-            <a href="#dashboard" className="transition hover:text-white">
-              Live Demo
-            </a>
-            <a href="#why" className="transition hover:text-white">
-              Why VibeBoard
-            </a>
-            <a href="#setup" className="transition hover:text-white">
-              1-Prompt Setup
-            </a>
-            <a href="#pricing" className="transition hover:text-white">
-              Pricing
-            </a>
-          </nav>
-
-          <div className="flex items-center gap-3">
-            <a
-              href="https://github.com/allanindrajith/vibeboard"
-              target="_blank"
-              rel="noreferrer"
-              className="hidden text-xs font-medium text-zinc-400 transition hover:text-white sm:inline"
-            >
-              GitHub
-            </a>
+    <div className="luma-ambient-bg min-h-screen text-[#131517]">
+      {/* Luma-style Top Navigation */}
+      <header className="sticky top-0 z-40 border-b border-[#131517]/6 bg-[#FAF9F7]/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5">
+          {/* Brand + Nav */}
+          <div className="flex items-center gap-6">
             <button
               type="button"
-              onClick={() => scrollToWaitlist()}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-400 px-3.5 py-2 text-xs font-semibold text-zinc-950 transition hover:bg-emerald-300"
+              onClick={() => setView('overview')}
+              className="flex items-center gap-2.5"
             >
-              Get Early Access
-              <ArrowRight className="h-3.5 w-3.5" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[#FF4D79] via-[#E11D48] to-[#7C3AED] text-white shadow-sm">
+                <BarChart3 className="h-4 w-4" />
+              </div>
+              <span className="text-base font-semibold tracking-tight text-[#131517]">
+                VibeBoard
+              </span>
             </button>
+
+            <nav className="hidden items-center gap-1 md:flex">
+              {NAV_ITEMS.map((item) => {
+                const Icon = item.icon;
+                const active = view === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setView(item.id)}
+                    className={`inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-xs font-medium transition ${
+                      active
+                        ? 'bg-white text-[#131517] shadow-xs ring-1 ring-[#131517]/8'
+                        : 'text-[#64666B] hover:bg-white/60 hover:text-[#131517]'
+                    }`}
+                  >
+                    <Icon className="h-3.5 w-3.5" />
+                    {item.label}
+                  </button>
+                );
+              })}
+            </nav>
+          </div>
+
+          {/* Right Controls */}
+          <div className="flex items-center gap-2">
+            {/* Timeframe Switcher */}
+            <div className="hidden items-center rounded-full bg-white p-0.5 font-mono text-[11px] ring-1 ring-[#131517]/8 sm:flex">
+              {(['7D', '30D', '90D'] as Timeframe[]).map((tf) => (
+                <button
+                  key={tf}
+                  type="button"
+                  onClick={() => setTimeframe(tf)}
+                  className={`rounded-full px-2.5 py-1 font-medium transition ${
+                    timeframe === tf
+                      ? 'bg-[#131517] text-white'
+                      : 'text-[#64666B] hover:text-[#131517]'
+                  }`}
+                >
+                  {tf}
+                </button>
+              ))}
+            </div>
+
+            {/* Cloud Sync / Sign In Pill */}
+            {user ? (
+              <div className="hidden items-center gap-1.5 rounded-full border border-[#A7F3D0] bg-[#ECFDF5] px-3 py-1.5 text-[11px] font-medium text-[#047857] lg:inline-flex">
+                <Cloud className="h-3.5 w-3.5" />
+                <span>{syncing ? 'Syncing…' : user.email?.split('@')[0]}</span>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setAuthModalOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-full bg-white px-3.5 py-2 text-xs font-medium text-[#131517] ring-1 ring-[#131517]/10 transition hover:bg-[#F5F4F1]"
+              >
+                <CloudOff className="h-3.5 w-3.5 text-[#E11D48]" />
+                Sign In
+              </button>
+            )}
+
+            {/* Primary Add App CTA */}
+            <button
+              type="button"
+              onClick={() => setProjectModal({ open: true, mode: 'create', project: null })}
+              className="inline-flex items-center gap-1.5 rounded-full bg-[#131517] px-3.5 py-2 text-xs font-medium text-white shadow-xs transition hover:bg-[#2A2D32]"
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add App
+            </button>
+
+            {/* Workspace Menu */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setMenuOpen((o) => !o)}
+                title="Workspace options"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#5C5E64] ring-1 ring-[#131517]/8 transition hover:text-[#131517]"
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </button>
+
+              {menuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setMenuOpen(false)} />
+                  <div className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-2xl border border-[#131517]/10 bg-white p-1.5 shadow-xl">
+                    {user && (
+                      <div className="border-b border-[#131517]/6 px-3 py-2">
+                        <div className="text-[10px] font-semibold uppercase tracking-wider text-[#8E9096]">
+                          Supabase Synced
+                        </div>
+                        <div className="truncate text-xs font-medium text-[#131517]">
+                          {user.email}
+                        </div>
+                      </div>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        exportJson();
+                        setMenuOpen(false);
+                      }}
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#131517] transition hover:bg-[#FAF9F7]"
+                    >
+                      <Download className="h-3.5 w-3.5 text-[#64666B]" />
+                      Export JSON Backup
+                    </button>
+                    {!user && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => fileInputRef.current?.click()}
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#131517] transition hover:bg-[#FAF9F7]"
+                        >
+                          <Upload className="h-3.5 w-3.5 text-[#64666B]" />
+                          Import JSON Backup
+                        </button>
+                        <div className="my-1 border-t border-[#131517]/6" />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            resetDemoData();
+                            setSelectedId('all');
+                            setMenuOpen(false);
+                          }}
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#BE123C] transition hover:bg-[#FFF1F2]"
+                        >
+                          <RotateCcw className="h-3.5 w-3.5" />
+                          Reset Demo Data
+                        </button>
+                      </>
+                    )}
+                    {user && (
+                      <>
+                        <div className="my-1 border-t border-[#131517]/6" />
+                        <button
+                          type="button"
+                          onClick={handleSignOut}
+                          className="flex w-full items-center gap-2 rounded-xl px-3 py-2 text-left text-xs font-medium text-[#BE123C] transition hover:bg-[#FFF1F2]"
+                        >
+                          <LogOut className="h-3.5 w-3.5" />
+                          Sign Out
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="application/json"
+                onChange={handleImportFile}
+                className="hidden"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Nav Bar */}
+        <div className="flex items-center justify-between gap-2 border-t border-[#131517]/6 px-4 py-2 md:hidden">
+          <div className="flex items-center gap-1 overflow-x-auto">
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              const active = view === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setView(item.id)}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
+                    active ? 'bg-[#131517] text-white' : 'text-[#64666B]'
+                  }`}
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       </header>
 
-      {/* Hero + Interactive Dashboard */}
-      <section id="dashboard" className="relative overflow-hidden bg-grid-pattern pt-20 pb-24">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-zinc-900/80 px-3 py-1 text-xs text-zinc-300">
-              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse-dot" />
-              Ship-to-Revenue analytics for Cursor, Lovable, Bolt & v0 builders
-            </div>
-
-            <h1 className="mt-6 text-4xl font-bold tracking-tight text-white sm:text-6xl sm:leading-[1.08]">
-              You shipped 11 apps.
-              <br />
-              <span className="bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                Which one makes money?
+      {/* Main Workspace Canvas */}
+      <main className="mx-auto max-w-6xl px-5 py-7">
+        {!isCloud && (
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#FECDD3]/80 bg-white/85 px-4 py-3 shadow-xs backdrop-blur-xs">
+            <div className="flex items-center gap-2.5 text-xs text-[#3F4147]">
+              <span className="h-2 w-2 rounded-full bg-[#E11D48] animate-pulse-dot" />
+              <span>
+                <strong className="font-semibold text-[#131517]">Local Demo Mode.</strong> Sign in
+                to sync your projects to Supabase Postgres and ingest live traffic + Stripe
+                webhooks.
               </span>
-            </h1>
-
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-zinc-400 sm:text-lg">
-              One unified dashboard across every weekend app you vibe-coded. Track{' '}
-              <span className="text-zinc-200">visitors → signups → Stripe MRR → churn</span> with
-              zero event schemas and plain-English Kill/Scale verdicts.
-            </p>
-
-            {/* Inline Waitlist Form */}
-            <form
-              id="waitlist"
-              onSubmit={handleWaitlist}
-              className="mx-auto mt-8 flex max-w-md flex-col gap-2.5 sm:flex-row"
-            >
-              {submitted ? (
-                <div className="flex w-full items-center justify-center gap-2 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-300">
-                  <Check className="h-4 w-4" />
-                  You're on the VibeBoard beta list
-                  {selectedPlan ? ` (${selectedPlan})` : ''}. We'll send your project key soon.
-                </div>
-              ) : (
-                <>
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="founder@yourdomain.com"
-                    className="flex-1 rounded-xl border border-white/15 bg-zinc-950/90 px-4 py-3 text-sm text-white placeholder-zinc-500 outline-none transition focus:border-emerald-400"
-                  />
-                  <button
-                    type="submit"
-                    className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-emerald-400 px-5 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300"
-                  >
-                    Claim Key
-                    <ArrowRight className="h-4 w-4" />
-                  </button>
-                </>
-              )}
-            </form>
-
-            <div className="mt-3 font-mono text-[11px] text-zinc-500">
-              Free for up to 3 apps · 1-prompt install · No GA4 bloat
             </div>
-          </div>
-
-          {/* Interactive Portfolio Dashboard */}
-          <InteractiveDashboard />
-        </div>
-      </section>
-
-      {/* Anti-Vanity Comparison */}
-      <section id="why" className="border-y border-white/10 bg-zinc-950/50 py-24">
-        <div className="mx-auto max-w-5xl px-6">
-          <div className="text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              GA4 was built for enterprise marketers.
-              <br />
-              <span className="text-zinc-400">You shipped this app at 2 AM.</span>
-            </h2>
-          </div>
-
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
-            {/* Old Way */}
-            <div className="rounded-2xl border border-rose-500/15 bg-zinc-900/40 p-6">
-              <div className="font-mono text-xs font-semibold text-rose-400">THE OLD WAY</div>
-              <h3 className="mt-2 text-lg font-semibold text-white">
-                5 browser tabs and zero answers
-              </h3>
-              <ul className="mt-5 space-y-3 text-sm text-zinc-400">
-                {[
-                  'Separate PostHog / Plausible / GA4 tabs for every side project',
-                  'Manually writing tracking events & SQL funnels you never check',
-                  'Vanity pageview spikes that hide $0 Stripe conversion',
-                  'No idea whether Tuesday’s Cursor refactor helped or broke checkout',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5">
-                    <X className="mt-0.5 h-4 w-4 shrink-0 text-rose-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* VibeBoard Way */}
-            <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/[0.04] p-6">
-              <div className="font-mono text-xs font-semibold text-emerald-400">THE VIBEBOARD WAY</div>
-              <h3 className="mt-2 text-lg font-semibold text-white">
-                One Ship-to-Revenue cockpit
-              </h3>
-              <ul className="mt-5 space-y-3 text-sm text-zinc-200">
-                {[
-                  'All your weekend apps ranked side-by-side by real Stripe MRR',
-                  'Paste 1 prompt into Cursor, Lovable, or Bolt—tracking auto-wires',
-                  'Plain-English Kill / Optimize / Scale verdicts on every project',
-                  '1-click fix prompts you paste straight back into your AI editor',
-                ].map((item) => (
-                  <li key={item} className="flex items-start gap-2.5">
-                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Feature Bento Grid */}
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <div className="max-w-2xl">
-          <span className="font-mono text-xs text-emerald-400">BUILT FOR SERIAL SHIPPERS</span>
-          <h2 className="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Everything you need to double down on winners—and kill duds fast.
-          </h2>
-        </div>
-
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {[
-            {
-              icon: Layers,
-              title: 'Multi-App Portfolio Rollup',
-              desc: 'Track 20 vibe-coded domains under one login. Instantly compare visitor-to-paid conversion across every launch.',
-            },
-            {
-              icon: CreditCard,
-              title: 'Auto-Linked Stripe & Polar MRR',
-              desc: 'Tie anonymous first clicks directly to Stripe charges, renewals, and cancellations—no manual UTM spreadsheets.',
-            },
-            {
-              icon: Sparkles,
-              title: 'AI Kill / Scale Verdicts',
-              desc: 'Weekly blunt diagnosis on every app: where users bounce, why they didn’t pay, and a copyable prompt to fix it.',
-            },
-            {
-              icon: GitBranch,
-              title: 'Ship Velocity Overlay',
-              desc: 'See your GitHub deploys pinned directly on the revenue chart so you know which prompt actually moved MRR.',
-            },
-            {
-              icon: ShieldCheck,
-              title: '1.2KB, Cookie-Free, Privacy-First',
-              desc: 'Zero cookie banners, zero Core Web Vitals hit, and fully GDPR-friendly out of the box.',
-            },
-            {
-              icon: BarChart3,
-              title: 'MCP Server Built In',
-              desc: 'Ask Claude Code or Cursor directly: "Why did ClipForge signups drop after yesterday’s deploy?"',
-            },
-          ].map((feat) => (
-            <div
-              key={feat.title}
-              className="rounded-2xl border border-white/10 bg-zinc-900/40 p-6 transition hover:border-white/20"
+            <button
+              type="button"
+              onClick={() => setAuthModalOpen(true)}
+              className="rounded-full bg-[#131517] px-3.5 py-1.5 text-xs font-medium text-white transition hover:bg-[#2A2D32]"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-500/10">
-                <feat.icon className="h-5 w-5 text-emerald-400" />
-              </div>
-              <h3 className="mt-4 text-base font-semibold text-white">{feat.title}</h3>
-              <p className="mt-2 text-sm leading-relaxed text-zinc-400">{feat.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* 1-Prompt Setup */}
-      <div className="border-t border-white/10 bg-zinc-950/40">
-        <PromptSetupSection />
-      </div>
-
-      {/* Pricing */}
-      <div className="border-t border-white/10">
-        <PricingSection onSelectPlan={(plan) => scrollToWaitlist(plan)} />
-      </div>
-
-      {/* Final CTA */}
-      <section className="mx-auto max-w-5xl px-6 pb-24">
-        <div className="relative overflow-hidden rounded-3xl border border-emerald-500/25 bg-gradient-to-br from-emerald-500/10 via-zinc-900 to-zinc-950 px-8 py-14 text-center">
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-            Stop guessing which weekend app deserves Monday.
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-sm text-zinc-400 sm:text-base">
-            Connect all your repos in 30 seconds and see real Ship-to-Revenue numbers across your
-            entire portfolio.
-          </p>
-          <button
-            type="button"
-            onClick={() => scrollToWaitlist()}
-            className="mt-7 inline-flex items-center gap-2 rounded-xl bg-emerald-400 px-6 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-300"
-          >
-            Get Early Access — Free
-            <ArrowRight className="h-4 w-4" />
-          </button>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-white/10 py-10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-xs text-zinc-500 sm:flex-row">
-          <div className="flex items-center gap-2">
-            <BarChart3 className="h-4 w-4 text-emerald-400" />
-            <span className="font-semibold text-zinc-300">VibeBoard</span>
-            <span>· Built for vibecoders who ship for revenue</span>
+              Sign In / Create Account
+            </button>
           </div>
-          <div className="flex items-center gap-5 font-mono">
-            <a
-              href="https://vibeboard.itsallan.me"
-              className="transition hover:text-zinc-300"
-            >
-              vibeboard.itsallan.me
-            </a>
-            <a
-              href="https://github.com/allanindrajith/vibeboard"
-              target="_blank"
-              rel="noreferrer"
-              className="transition hover:text-zinc-300"
-            >
-              GitHub
-            </a>
-          </div>
-        </div>
-      </footer>
+        )}
+
+        {view === 'overview' && (
+          <OverviewView
+            projects={projects}
+            events={events}
+            timeframe={timeframe}
+            selectedId={selectedId}
+            onSelectId={setSelectedId}
+            onEditProject={(project) =>
+              setProjectModal({ open: true, mode: 'edit', project })
+            }
+            onOpenAddProject={() =>
+              setProjectModal({ open: true, mode: 'create', project: null })
+            }
+            onOpenLogEvent={(projectId) => setEventModal({ open: true, projectId })}
+            onQuickRevenue={(project, amount) =>
+              logEvent({
+                projectId: project.id,
+                type: 'revenue',
+                label: 'stripe.charge.succeeded',
+                detail: `+$${amount.toFixed(2)} · Quick Sale`,
+                amount,
+              })
+            }
+          />
+        )}
+
+        {view === 'projects' && (
+          <ProjectsView
+            projects={projects}
+            timeframe={timeframe}
+            onAddProject={() =>
+              setProjectModal({ open: true, mode: 'create', project: null })
+            }
+            onEditProject={(project) =>
+              setProjectModal({ open: true, mode: 'edit', project })
+            }
+            onDeleteProject={handleDeleteProject}
+            onOpenInstall={(projectId) => {
+              setInstallProjectId(projectId);
+              setView('install');
+            }}
+            onInspectProject={(projectId) => {
+              setSelectedId(projectId);
+              setView('overview');
+            }}
+          />
+        )}
+
+        {view === 'events' && (
+          <EventsView
+            projects={projects}
+            events={events}
+            onOpenLogEvent={(projectId) => setEventModal({ open: true, projectId })}
+          />
+        )}
+
+        {view === 'install' && (
+          <InstallView
+            projects={projects}
+            isCloud={isCloud}
+            initialProjectId={installProjectId}
+            onRefreshCloud={refreshCloud}
+          />
+        )}
+      </main>
+
+      {/* Modals */}
+      {authModalOpen && <AuthModal onClose={() => setAuthModalOpen(false)} />}
+
+      {projectModal.open && (
+        <ProjectModal
+          mode={projectModal.mode}
+          timeframe={timeframe}
+          initialProject={projectModal.project}
+          onClose={() => setProjectModal({ open: false, mode: 'create', project: null })}
+          onCreate={async (input) => {
+            const created = await addProject(input);
+            if (created) setSelectedId(created.id);
+          }}
+          onUpdate={(id, updates) => updateProject(id, timeframe, updates)}
+        />
+      )}
+
+      {eventModal.open && projects.length > 0 && (
+        <LogEventModal
+          projects={projects}
+          defaultProjectId={eventModal.projectId}
+          onClose={() => setEventModal({ open: false })}
+          onLog={logEvent}
+        />
+      )}
     </div>
   );
 }
